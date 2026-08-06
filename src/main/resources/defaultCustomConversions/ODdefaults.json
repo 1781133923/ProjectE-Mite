@@ -1,0 +1,134 @@
+{
+  "comment": "Various default values for OreDictionary Names",
+  "values": {
+    "before": {
+      //trees
+      "OD|logWood": 32,
+      "OD|plankWood": 8,
+      "OD|treeSapling": 32,
+      "OD|stickWood": 4,
+      "OD|treeLeaves": 1,
+
+      // MITE wood blocks/planks (MITE does not register the OreDictionary, so
+      // the OD entries above never reach them; set the values directly).
+      "minecraft:tile.wood|0": 8,
+      "minecraft:tile.wood|1": 8,
+      "minecraft:tile.wood|2": 8,
+      "minecraft:tile.wood|3": 8,
+      "minecraft:tile.log|0": 32,
+      "minecraft:tile.log|1": 32,
+      "minecraft:tile.log|2": 32,
+      "minecraft:tile.log|3": 32,
+
+      "OD|blockGlass": 1,
+      "OD|blockCloth": 48,
+
+      //building stuff
+      "OD|stone": 1,
+      "OD|cobblestone": 1,
+
+      //gems and dusts
+      "OD|gemDiamond": 32768,
+      "OD|ingotMithril": 16384,
+      "OD|ingotAdamantium": 65536,
+      "OD|ingotAncientMetal": 4096,
+      "ProjectE:pe_fuel|0": 512,
+      "ProjectE:pe_fuel|1": 2048,
+      "ProjectE:pe_fuel|2": 8192,
+      "ProjectE:pe_matter|0": 139264,
+      "ProjectE:pe_matter|1": 483328,
+      "OD|dustRedstone": 64,
+      "OD|dustGlowstone": 384,
+      "OD|dustCoal": 64,
+      "OD|dustCharcoal": 16,
+      "OD|dustSulfur": 32,
+
+      /*TC*/
+      "OD|ingotThaumium": 2048,
+      /*Ender IO*/
+      "OD|itemSilicon": 32,
+      /*Mekanism*/
+      "OD|ingotOsmium": 512,
+
+      //AE2
+      "OD|crystalCertusQuartz": 64,
+      "OD|crystalFluix": 256,
+      "OD|dustCertusQuartz": 32,
+      "OD|dustFluix": 128,
+
+      //BOP-ProjectRed
+      "OD|gemRuby": 2048,
+      "OD|gemSapphire": 2048,
+      "OD|gemPeridot": 2048,
+      "OD|blockMarble": 4,
+
+      //TE
+      "OD|blockGlassHardened": 192,
+
+      //IC2 BigReactors
+      "OD|itemRubber": 32,
+      "OD|ingotUranium": 4096,
+      "OD|ingotCyanite": 1024,
+
+      //Thaumcraft
+      "OD|shardAir": 64,
+      "OD|shardFire": 64,
+      "OD|shardWater": 64,
+      "OD|shardEarth": 64,
+      "OD|shardOrder": 64,
+      "OD|shardEntropy": 64,
+
+      //Forbidden Magic
+      "OD|shardNether": 64,
+
+      // MITE food / misc items
+      "minecraft:wormRaw|0": 16,
+      "minecraft:wormCooked|0": 16,
+      "minecraft:onion|0": 64,
+      "minecraft:orange|0": 128,
+      "minecraft:banana|0": 128,
+      "minecraft:cheese|0": 128,
+      "minecraft:potion|0": 1,
+      "minecraft:blueberries|0": 32,
+      "minecraft:manure|0": 8,
+      "minecraft:gelatinousSphere|0": 32,
+      "minecraft:gelatinousSphere|1": 32,
+      "minecraft:gelatinousSphere|2": 32,
+      "minecraft:gelatinousSphere|3": 32,
+      "minecraft:gelatinousSphere|4": 32,
+
+      // Metal blocks: fixed values so the Extreme (极难) mod's 1:1
+      // block <-> gem-box exchanges cannot drag them down (each block is
+      // 9 x its material).
+      "minecraft:tile.blockCoal|0": 1152,
+      "minecraft:tile.blockCopper|0": 1152,
+      "minecraft:tile.blockSilver|0": 1152,
+      "minecraft:tile.blockGold|0": 18432,
+      "minecraft:tile.blockIron|0": 2304,
+      "minecraft:tile.blockAncientMetal|0": 36864,
+      "minecraft:tile.blockMithril|0": 147456,
+      "minecraft:tile.blockAdamantium|0": 589824,
+      "minecraft:tile.blockLapis|0": 7776,
+      "minecraft:tile.blockRedstone|0": 576,
+      "minecraft:tile.blockDiamond|0": 294912,
+      "minecraft:tile.blockEmerald|0": 147456,
+
+      // Metal anvils: fixed values (3 x block + 4 x ingot). The graph's
+      // order-dependent truncation can otherwise compute wildly wrong values
+      // for these (e.g. mithril 528, adamantite 84, ancient metal 2499).
+      "minecraft:tile.anvilIron|0": 7936,
+      "minecraft:tile.anvilCopper|0": 3968,
+      "minecraft:tile.anvilSilver|0": 3968,
+      "minecraft:tile.anvilGold|0": 63488,
+      "minecraft:tile.anvilMithril|0": 507904,
+      "minecraft:tile.anvilAdamantium|0": 2031616,
+      "minecraft:tile.anvilAncientMetal|0": 126976
+    },
+    "after": {
+      // New gem economy (philosopher's stone): 8 gold -> emerald -> 2x emerald -> diamond.
+      // gold = 2048 (8x iron), so emerald = 16384 and diamond = 32768.
+      "minecraft:emerald|0": 16384,
+      "minecraft:diamond|0": 32768
+    }
+  }
+}

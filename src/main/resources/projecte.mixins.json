@@ -1,0 +1,44 @@
+{
+	"required": true,
+	"package": "moze_intel.projecte.mixins",
+	"compatibilityLevel": "JAVA_17",
+	"target": "DEFAULT",
+	"minVersion": "0.8.3",
+	"mixins": [
+		"PlayerPropsMixin",
+		"PlayerCloneEventMixin",
+		"CondenserLockClickMixin",
+		"ProjectEMagicWeaponMixin",
+		"ProjectEElementalDamageMixin",
+		"ProjectEBedrockElementalMixin",
+		"ProjectEFireImmunityMixin",
+		"ProjectEUnbreakableArmorMixin",
+		"ProjectEGemLightningMixin",
+		"ProjectEGemPhysicalResistMixin",
+		"ProjectEEntityTrackerMixin",
+		"ProjectEItemStackLoadMixin",
+		"ProjectEIronBandProtectionMixin",
+		"ProjectEPortableTransmutationLockMixin",
+		"ProjectEServerStartMixin",
+		"ProjectENovaTntMixin",
+		"ProjectEFlintAndSteelMixin",
+		"ProjectENovaNoDropMixin",
+		"ProjectEDungeonGlowstoneMixin"
+	],
+	"client": [
+		"TransmutationGuiClickMixin",
+		"TooltipMixin",
+		"ProjectEItemRendererMixin",
+		"ProjectERenderItemMixin",
+		"ProjectERenderBlocksMixin",
+		"ProjectEPhiloBenchMixin",
+		"ProjectEPhiloTableMixin",
+		"ProjectEStartGameMixin",
+		"ProjectECropsDeadIconMixin",
+		"ProjectECraftingSpeedMixin",
+		"ProjectEKeybindingsMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

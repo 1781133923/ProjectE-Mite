@@ -1,0 +1,29 @@
+# Gradle / build outputs
+build/
+bin/
+.gradle/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Game runtime data (worlds, logs, configs, mods, caches)
+run/
+
+# Local third-party dependencies (see README)
+libs/
+
+# Local runtime jars
+MITE-HDS.jar
+
+# Project-local agent tooling
+.codex/
+
+# Logs
+*.log
+
+# OS noise
+Thumbs.db
+Desktop.ini
+.DS_Store
