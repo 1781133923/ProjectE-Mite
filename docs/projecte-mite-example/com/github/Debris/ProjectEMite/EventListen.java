@@ -1,7 +1,7 @@
-package com.github.Debris.HelloFML;
+package com.github.Debris.ProjectEMite;
 
-import com.github.Debris.HelloFML.blocks.Blocks;
-import com.github.Debris.HelloFML.items.Items;
+import com.github.Debris.ProjectEMite.blocks.Blocks;
+import com.github.Debris.ProjectEMite.items.Items;
 import com.google.common.eventbus.Subscribe;
 import net.xiaoyu233.fml.reload.event.*;
 import net.xiaoyu233.fml.reload.utils.IdUtil;

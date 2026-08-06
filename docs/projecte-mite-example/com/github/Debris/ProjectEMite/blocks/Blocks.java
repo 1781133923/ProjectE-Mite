@@ -1,4 +1,4 @@
-package com.github.Debris.HelloFML.blocks;
+package com.github.Debris.ProjectEMite.blocks;
 
 import net.minecraft.Block;
 import net.minecraft.BlockConstants;

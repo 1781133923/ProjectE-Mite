@@ -1,4 +1,4 @@
-package com.github.Debris.HelloFML.items;
+package com.github.Debris.ProjectEMite.items;
 
 import net.minecraft.Item;
 import net.xiaoyu233.fml.reload.event.ItemRegistryEvent;
