@@ -32,6 +32,7 @@ public class DarkPick extends PEToolBase
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOff);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOn);
+		this.harvestBlocks.add(ObjHandler.transmuteStone);
 	}
 
 	// Only for RedPick

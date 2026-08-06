@@ -92,6 +92,11 @@ public abstract class GemArmorBase extends ItemArmor implements ISpecialArmor
 		return true;
 	}
 
+	public EnumArmorType getArmorPiece()
+	{
+		return this.armorPiece;
+	}
+
 	/**
 	 * MITE has no Forge onArmorTick hook; the ProjectE tick listener calls this
 	 * for every worn gem piece on both client and server.

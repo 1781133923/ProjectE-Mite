@@ -40,7 +40,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     implementation files(loom.getFML().toPath())
-    implementation files("X:\\MITEmoddev\\RustedIronCore-1.5.5.jar")
+    implementation files("libs/RustedIronCore-1.5.5.jar")
     // Standard client-initialization hook (defer renderer registration until
     // after Minecraft.startGame(), see ProjectE.onInitialize).
     // Optional pinyin search for the transmutation table (PinIn-Lib).

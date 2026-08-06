@@ -53,6 +53,10 @@ public abstract class ProjectEDungeonGlowstoneMixin
 
 	private static void addGlowstone(TileEntityChest chest, Random rand)
 	{
+		if (moze_intel.projecte.config.ProjectEOConfig.disableDungeonGlowstone)
+		{
+			return;
+		}
 		float roll = rand.nextFloat();
 		int count = roll < 0.1F ? 2 : (roll < 0.4F ? 1 : 0);
 		if (count <= 0)

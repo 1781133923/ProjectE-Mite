@@ -22,16 +22,24 @@ import java.util.Random;
 
 public class TransmutationStone extends Block
 {
+	// Custom material: keeps the stone look/behaviour but does not require a
+	// tool, so the table can be mined with bare hands. MITE's mining time is
+	// 512 * hardness / playerStr ticks; hardness 0.2 with hand strength 1.0
+	// gives ~5 seconds (102 ticks).
+	private static final Material TABLE_MATERIAL =
+		new Material("transmutation_table", net.minecraft.MapColor.stoneColor);
+
 	@SideOnly(Side.CLIENT)
 	private Icon[] icon;
 	
 	public TransmutationStone() 
 	{
-		super(net.xiaoyu233.fml.reload.utils.IdUtil.getNextBlockID(), Material.stone, new BlockConstants());
+		super(net.xiaoyu233.fml.reload.utils.IdUtil.getNextBlockID(), TABLE_MATERIAL, new BlockConstants());
 		this.setCreativeTab(ObjHandler.cTab);
 		this.setUnlocalizedName("pe_transmutation_stone");
 		this.setBlockBoundsForAllThreads(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
-		this.setHardness(10.0f);
+		this.setHardness(0.2f);
+		this.setStepSound(Block.soundStoneFootstep);
 	}
 
 	@Override

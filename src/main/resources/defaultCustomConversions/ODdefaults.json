@@ -84,6 +84,8 @@
       // MITE food / misc items
       "minecraft:wormRaw|0": 16,
       "minecraft:wormCooked|0": 16,
+      "minecraft:lambchopRaw|0": 64,
+      "minecraft:lambchopCooked|0": 64,
       "minecraft:onion|0": 64,
       "minecraft:orange|0": 128,
       "minecraft:banana|0": 128,

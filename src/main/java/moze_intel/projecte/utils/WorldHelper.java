@@ -328,6 +328,26 @@ public final class WorldHelper
 	{
 		return AxisAlignedBB.getBoundingBox(coords.x - offset, coords.y, coords.z - offset, coords.x + offset, coords.y, coords.z + offset);
 	}
+	/**
+	 * A one-block-thick plane oriented to the face that was hit: a wall face
+	 * digs the vertical XY/ZY plane, the floor/ceiling digs the horizontal XZ
+	 * plane. Size is 2*offset+1 in the two non-fixed axes.
+	 */
+	public static AxisAlignedBB getFaceFlatBox(Coordinates coords, ForgeDirection direction, int offset)
+	{
+		if (direction.offsetX != 0)
+		{
+			return AxisAlignedBB.getBoundingBox(coords.x, coords.y - offset, coords.z - offset,
+					coords.x, coords.y + offset, coords.z + offset);
+		}
+		else if (direction.offsetZ != 0)
+		{
+			return AxisAlignedBB.getBoundingBox(coords.x - offset, coords.y - offset, coords.z,
+					coords.x + offset, coords.y + offset, coords.z);
+		}
+		return AxisAlignedBB.getBoundingBox(coords.x - offset, coords.y, coords.z - offset,
+				coords.x + offset, coords.y, coords.z + offset);
+	}
 
 	public static <T extends Entity> T getNewEntityInstance(Class<T> c, World world)
 	{
@@ -822,7 +842,7 @@ public final class WorldHelper
 						numMined++;
 						if (PlayerHelper.hasBreakPermission(((ServerPlayer) player), x, y, z))
 						{
-							currentDrops.addAll(getBlockDrops(world, player, block, stack, x, y, z));
+							currentDrops.addAll(moze_intel.projecte.gameObjs.items.tools.PEToolBase.getAoeDrops(world, stack, player, block, x, y, z));
 							world.setBlockToAir(x, y, z);
 							harvestVein(world, player, stack, new Coordinates(x, y, z), target, currentDrops, numMined);
 						}

@@ -125,6 +125,13 @@ public final class PEToolMaterials
 		if (darkEquipment != null) darkEquipment.setEnchantability(dark);
 		if (redEquipment != null) redEquipment.setEnchantability(red);
 		if (gemEquipment != null) gemEquipment.setEnchantability(gem);
+		// MITE's ItemArmor/ItemTool read the enchantability field directly from
+		// the Material object (getMaterialForEnchantment().enchantability), so
+		// updating only the equipment wrapper does nothing - the Material field
+		// is what the enchantment table actually uses.
+		DARK_MATTER.setEnchantability(dark);
+		RED_MATTER.setEnchantability(red);
+		GEM_MATTER.setEnchantability(gem);
 	}
 
 	/**

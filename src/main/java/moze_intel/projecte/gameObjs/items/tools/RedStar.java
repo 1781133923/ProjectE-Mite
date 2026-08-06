@@ -26,6 +26,7 @@ public class RedStar extends PEToolBase
 		super("rm_morning_star", (byte) 4, new String[]{
 				"pe.morningstar.mode1", "pe.morningstar.mode2",
 				"pe.morningstar.mode3", "pe.morningstar.mode4",
+				"pe.morningstar.mode_emc",
 		});
 		
 		this.peToolMaterial = "rm_tools";
@@ -84,6 +85,13 @@ public class RedStar extends PEToolBase
 		World world = player.worldObj;
 		if (!world.isRemote)
 		{
+			if (this.isEmcMode(stack))
+			{
+				// EMC mode: dig a single flat layer and convert blocks to EMC.
+				digAOE(stack, world, player, false, 0);
+				return true;
+			}
+
 			if (ProjectEConfig.pickaxeAoeVeinMining)
 			{
 				mineOreVeinsInAOE(stack, player);
@@ -123,7 +131,7 @@ public class RedStar extends PEToolBase
 				}
 				else
 				{
-					digAOE(stack, world, player, true, 0);
+					digAOE(stack, world, player, false, 0);
 				}
 			}
 		}
@@ -153,6 +161,11 @@ public class RedStar extends PEToolBase
 	public float getAttackDamage()
 	{
 		return 25.0F;
+	}
+	@Override
+	public boolean isEmcMode(ItemStack stack)
+	{
+		return getMode(stack) == 4;
 	}
 
 	@Override

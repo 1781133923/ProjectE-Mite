@@ -7,7 +7,7 @@ public class RedHammer extends DarkHammer
 {
 	public RedHammer() 
 	{
-		super("rm_hammer", (byte)3, new String[]{});
+		super("rm_hammer", (byte)3, new String[]{"pe.hammer.mode1", "pe.hammer.mode_emc"});
 		
 		this.peToolMaterial = "rm_tools";
 		this.pePrimaryToolClass = "hammer";

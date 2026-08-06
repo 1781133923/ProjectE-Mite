@@ -23,7 +23,9 @@
 		"ProjectENovaTntMixin",
 		"ProjectEFlintAndSteelMixin",
 		"ProjectENovaNoDropMixin",
-		"ProjectEDungeonGlowstoneMixin"
+		"ProjectEDungeonGlowstoneMixin",
+		"ProjectEServerStopMixin",
+		"ProjectETransmutationTablePickaxeMixin"
 	],
 	"client": [
 		"TransmutationGuiClickMixin",

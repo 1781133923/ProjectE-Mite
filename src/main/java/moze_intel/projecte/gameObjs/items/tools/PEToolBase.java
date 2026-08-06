@@ -171,6 +171,16 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	{
 		return false;
 	}
+	/**
+	 * True when the tool's current G-key mode is the EMC-conversion mode:
+	 * mined blocks that have an EMC value are converted straight into the
+	 * player's transmutation EMC instead of dropping; blocks without EMC keep
+	 * their normal drops. Subclasses with modes override this.
+	 */
+	public boolean isEmcMode(ItemStack stack)
+	{
+		return false;
+	}
 
 	/**
 	 * True for bedrock and the mantle/core block (hardness is -1, min harvest
@@ -720,6 +730,11 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 		EntityPlayer player = (EntityPlayer) living;
 		byte mode = this.getMode(stack);
 
+		if (this.isEmcMode(stack)) // EMC mode: single-block mining only
+		{
+			return;
+		}
+
 		if (mode == 0) // Standard
 		{
 			return;
@@ -827,7 +842,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 							&& PlayerHelper.hasBreakPermission(((ServerPlayer) player), i, j, k)
 							&& (canHarvestBlock(block, new ItemStack(this)) || ForgeHooks.canToolHarvestBlock(block, world.getBlockMetadata(i, j, k), new ItemStack(this))))
 					{
-						drops.addAll(WorldHelper.getBlockDrops(world, player, b, stack, i, j, k));
+						drops.addAll(getAoeDrops(world, stack, player, b, i, j, k));
 						world.setBlockToAir(i, j, k);
 					}
 				}
@@ -835,6 +850,32 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 		WorldHelper.createLootDrop(drops, world, x, y, z);
 	}
 
+	/**
+	 * Collects a block's drops for the right-click AOE dig modes. In EMC mode
+	 * a block with an EMC value is converted straight into the player's
+	 * transmutation EMC (no drops); blocks without EMC drop normally. Left-click
+	 * mining never goes through this helper, so it is never affected.
+	 */
+	public static List<ItemStack> getAoeDrops(World world, ItemStack stack, EntityPlayer player, Block block, int x, int y, int z)
+	{
+		if (stack != null && stack.getItem() instanceof PEToolBase && ((PEToolBase) stack.getItem()).isEmcMode(stack))
+		{
+			ItemStack blockStack = new ItemStack(block, 1, world.getBlockMetadata(x, y, z));
+			int emc = moze_intel.projecte.utils.EMCHelper.getSellValue(blockStack);
+			if (emc > 0)
+			{
+				// Only update the stored EMC. A full sync() here is unsafe:
+				// TransmutationProps is shared between the client and server
+				// players (keyed by name), and sync() iterates the knowledge
+				// list while the other side may mutate it (CME). The EMC is
+				// read fresh when the transmutation GUI is opened.
+				moze_intel.projecte.playerData.Transmutation.setEmc(player,
+						moze_intel.projecte.playerData.Transmutation.getEmc(player) + emc);
+				return new ArrayList<ItemStack>();
+			}
+		}
+		return WorldHelper.getBlockDrops(world, player, block, stack, x, y, z);
+	}
 	/**
 	 * Carves in an AOE. Charge affects the breadth and/or depth of the AOE. Optional per-block EMC cost.
 	 */
@@ -853,7 +894,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 		}
 
 		AxisAlignedBB box = affectDepth ? WorldHelper.getBroadDeepBox(new Coordinates(mop.blockX, mop.blockY, mop.blockZ), ForgeDirection.getOrientation(mop.sideHit), this.getCharge(stack))
-				: WorldHelper.getFlatYBox(new Coordinates(mop.blockX, mop.blockY, mop.blockZ), this.getCharge(stack));
+				: WorldHelper.getFaceFlatBox(new Coordinates(mop.blockX, mop.blockY, mop.blockZ), ForgeDirection.getOrientation(mop.sideHit), this.getCharge(stack));
 
 		List<ItemStack> drops = Lists.newArrayList();
 		boolean anyBroken = false;
@@ -873,7 +914,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 							&& consumeFuel(player, stack, emcCost, true)
 							)
 					{
-						drops.addAll(WorldHelper.getBlockDrops(world, player, b, stack, i, j, k));
+						drops.addAll(getAoeDrops(world, stack, player, b, i, j, k));
 						world.setBlockToAir(i, j, k);
 						anyBroken = true;
 					}

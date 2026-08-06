@@ -14,7 +14,7 @@ public class DarkHammer extends PEToolBase
 {
 	public DarkHammer() 
 	{
-		super("dm_hammer", (byte)2, new String[] {});
+		super("dm_hammer", (byte)2, new String[]{"pe.hammer.mode1", "pe.hammer.mode_emc"});
 		
 		this.peToolMaterial = "dm_tools";
 		this.pePrimaryToolClass = "hammer";
@@ -51,7 +51,9 @@ public class DarkHammer extends PEToolBase
 
 		ItemStack stack = player.getHeldItemStack();
 		World world = player.worldObj;
-		digAOE(stack, world, player, true, 0);
+		// One flat layer only (affectDepth=false); EMC mode converts the
+		// layer to EMC through getAoeDrops.
+		digAOE(stack, world, player, false, 0);
 		return true;
 	}
 	
@@ -69,6 +71,11 @@ public class DarkHammer extends PEToolBase
 	public float getAttackDamage()
 	{
 		return 15.0F;
+	}
+	@Override
+	public boolean isEmcMode(ItemStack stack)
+	{
+		return getMode(stack) == 1;
 	}
 
 	@Override

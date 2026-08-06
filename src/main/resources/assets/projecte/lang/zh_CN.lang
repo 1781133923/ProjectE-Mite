@@ -158,7 +158,7 @@ pe.bhb.pedestal2=可存入邻近的容器中
 
 pe.body.tooltip1=快捷栏生效：缓慢恢复饥饿值
 pe.body.pedestal1=恢复附近玩家的饥饿值
-pe.body.pedestal2=每%s恢复半格饥饿值
+pe.body.pedestal2=缓慢恢复附近玩家的饥饿值
 
 # pe.command.main.usage=/projecte <changelog, clearKnowledge, setEMC, reloadEMC, removeEMC, resetEMC>
 
@@ -267,7 +267,7 @@ pe.key.mode=转换模式
 
 pe.life.tooltip1=快捷栏生效：缓慢恢复生命值与饥饿值
 pe.life.pedestal1=恢复生命与饥饿度
-pe.life.pedestal2=每%s恢复半格生命值及饥饿值
+pe.life.pedestal2=缓慢恢复生命值与饥饿度
 
 pe.mind.tooltip1=快捷栏生效：吸取周围的经验球并储存
 pe.mind.pedestal1=将周围的经验球吸入念之宝石
@@ -314,7 +314,7 @@ pe.server.has_joined=进入服务器
 
 pe.soul.tooltip1=快捷栏生效：缓慢恢复生命值
 pe.soul.pedestal1=治疗附近的玩家
-pe.soul.pedestal2=每%s恢复半格生命值
+pe.soul.pedestal2=缓慢治疗附近的玩家
 
 pe.swrg.tooltip1=快捷栏生效：获得飞行能力
 pe.swrg.pedestal1=雷击附近的怪物
@@ -433,3 +433,14 @@ config.name.emcExchangeRatio=买卖 EMC 比例
 config.comment.emcExchangeRatio=买与卖emc的比例
 config.name.enableMatterEnchanting=是否启用套装附魔
 config.comment.enableMatterEnchanting=允许为暗物质/红物质/宝石装备附魔，默认关闭
+
+
+
+config.name.disableDungeonGlowstone=禁用荧石粉地牢战利品
+config.comment.disableDungeonGlowstone=开启后主世界与地下世界地牢不再生成荧石粉
+
+
+pe.hammer.mode1=普通挖掘
+pe.hammer.mode_emc=EMC模式
+pe.morningstar.mode_emc=EMC模式
+

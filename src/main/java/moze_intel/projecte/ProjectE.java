@@ -77,6 +77,20 @@ public class ProjectE implements ModInitializer {
         System.out.println("[ProjectE] Creative tabs registered: " +
                 huix.glacier.api.extension.creativetab.GlacierCreativeTabs.newCreativeTabArray.size());
 
+        // FishModLoader never posts the FML PlayerLoggedOutEvent either, so
+        // ConnectionHandler.playerDisconnect (which drops the in-memory
+        // transmutation/bag props) never ran. Bridge RIC's logout event onto
+        // the Forge-shim bus so the cleanup happens when leaving a world.
+        Handlers.PlayerEvent.register(new moddedmite.rustedironcore.api.event.listener.IPlayerEventListener() {
+            @Override
+            public void onPlayerLoggedOut(moddedmite.rustedironcore.api.event.events.PlayerLoggedOutEvent event) {
+                if (event.player() != null) {
+                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
+                            new cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent(event.player()));
+                }
+            }
+        });
+
         // Server ticks: drive FML TickEvents + ProjectE server lifecycle.
         Handlers.Tick.register(new ITickListener() {
             @Override
@@ -99,6 +113,7 @@ public class ProjectE implements ModInitializer {
                 // worn. Applied to the player attribute only (server side), so
                 // monsters that pick up the armour keep just its armour value.
                 updateKnockbackResistance(player);
+                updateLegsSpeed(player);
                 // MITE does not fire Forge's onArmorTick; drive the gem armour
                 // per-piece effects from the player tick (client + server).
                 for (net.minecraft.ItemStack stack : player.inventory.armorInventory) {
@@ -202,6 +217,96 @@ public class ProjectE implements ModInitializer {
               java.util.UUID.fromString("6F3A2D1C-9E45-4B7A-9D0E-3C1B8A4F7E21");
       private static final net.minecraft.AttributeModifier KNOCKBACK_RESISTANCE_MODIFIER =
               new net.minecraft.AttributeModifier(KNOCKBACK_RESISTANCE_UUID, "ProjectE knockback resistance", 1.0, 0);
+
+      /**
+       * Dark matter / red matter / gem leggings: +10% / +20% / +30% movement
+       * speed while worn. EntityPlayer.getAIMoveSpeed() returns the
+       * movementSpeed attribute value, so a multiply-base modifier (op 1)
+       * gives exactly the requested percentage. Applied on both sides so the
+       * client's local movement prediction matches the server.
+       */
+      private static final java.util.UUID LEGS_SPEED_UUID =
+              java.util.UUID.fromString("9B4A2C1E-7D35-4F6A-9B0C-1E2F3A4B5C6D");
+      private static final java.util.Map<String, Float> LEGS_BASE_FLY_SPEED = new java.util.HashMap<>();
+
+      private static void updateLegsSpeed(net.minecraft.EntityPlayer player)
+      {
+          double bonus = 0.0D;
+          // MITE armor slot order (confirmed by runtime debug output):
+          // 0=feet, 1=legs, 2=chest, 3=helmet.
+          net.minecraft.ItemStack legs = player.inventory.armorInventory[1];
+          if (legs != null)
+          {
+              net.minecraft.Item item = legs.getItem();
+              if (item instanceof moze_intel.projecte.gameObjs.items.armor.DMArmor
+                      && ((moze_intel.projecte.gameObjs.items.armor.DMArmor) item).getArmorPiece()
+                              == moze_intel.projecte.utils.EnumArmorType.LEGS)
+              {
+                  bonus = 0.1D;
+              }
+              else if (item instanceof moze_intel.projecte.gameObjs.items.armor.RMArmor
+                      && ((moze_intel.projecte.gameObjs.items.armor.RMArmor) item).getArmorPiece()
+                              == moze_intel.projecte.utils.EnumArmorType.LEGS)
+              {
+                  bonus = 0.2D;
+              }
+              else if (item instanceof moze_intel.projecte.gameObjs.items.armor.GemArmorBase
+                      && ((moze_intel.projecte.gameObjs.items.armor.GemArmorBase) item).getArmorPiece()
+                              == moze_intel.projecte.utils.EnumArmorType.LEGS)
+              {
+                  bonus = 0.3D;
+              }
+          }
+          net.minecraft.AttributeInstance attribute =
+                  player.getEntityAttribute(net.minecraft.SharedMonsterAttributes.movementSpeed);
+          net.minecraft.AttributeModifier modifier = attribute.getModifier(LEGS_SPEED_UUID);
+          if (bonus > 0.0D)
+          {
+              if (modifier != null && modifier.getAmount() != bonus)
+              {
+                  attribute.removeModifier(modifier);
+                  modifier = null;
+              }
+              if (modifier == null)
+              {
+                  attribute.applyModifier(new net.minecraft.AttributeModifier(
+                          LEGS_SPEED_UUID, "ProjectE leggings speed", bonus, 1));
+              }
+          }
+          else if (modifier != null)
+          {
+              attribute.removeModifier(modifier);
+          }
+          // Flight: MITE's flying speed comes from capabilities.flySpeed, not
+          // the movementSpeed attribute, so scale it separately. The original
+          // fly speed is captured once per player and restored when the
+          // leggings are taken off.
+          String flyKey = player.getEntityName();
+          Float baseFly = LEGS_BASE_FLY_SPEED.get(flyKey);
+          if (baseFly == null)
+          {
+              baseFly = player.capabilities.getFlySpeed();
+              LEGS_BASE_FLY_SPEED.put(flyKey, baseFly);
+          }
+          player.capabilities.setFlySpeed(bonus > 0.0D ? baseFly * (1.0F + (float) bonus) : baseFly);
+
+          if (player.ticksExisted % 40 == 0)
+          {
+              System.out.println("[ProjectE] legs-speed: bonus=" + bonus
+                      + " base=" + attribute.getBaseValue()
+                      + " value=" + attribute.getAttributeValue()
+                      + " applied=" + (attribute.getModifier(LEGS_SPEED_UUID) != null)
+                      + " armor=" + armorSlotName(player, 0) + "/" + armorSlotName(player, 1)
+                      + "/" + armorSlotName(player, 2) + "/" + armorSlotName(player, 3)
+                      + " fly=" + player.capabilities.getFlySpeed());
+          }
+      }
+
+      private static String armorSlotName(net.minecraft.EntityPlayer player, int slot)
+      {
+          net.minecraft.ItemStack stack = player.inventory.armorInventory[slot];
+          return stack == null || stack.getItem() == null ? "-" : stack.getItem().getClass().getSimpleName();
+      }
 
       private static void updateKnockbackResistance(net.minecraft.EntityPlayer player)
       {

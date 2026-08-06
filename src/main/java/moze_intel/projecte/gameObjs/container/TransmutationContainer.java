@@ -129,6 +129,12 @@ public class TransmutationContainer extends Container
 			}
 		}
 		
+		// MITE does not tick detectAndSendChanges while a pausing GUI is open
+		// (the integrated server is paused), so the shifted stack would only be
+		// re-rendered after reopening the GUI. Push the updated slots to the
+		// client immediately instead.
+		this.detectAndSendChanges();
+
 		return null;
 	}
 	

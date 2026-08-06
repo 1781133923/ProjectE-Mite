@@ -31,6 +31,7 @@ public final class ProjectEOConfig
 	public static boolean disableCondenser;
 	public static float emcExchangeRatio;
 	public static boolean enableMatterEnchanting;
+	public static boolean disableDungeonGlowstone;
 
 	private static File configFile;
 	private static final List<IRecipe> removedTransmutationRecipes = new ArrayList<>();
@@ -45,6 +46,7 @@ public final class ProjectEOConfig
 	private static Object manyLibValueCondenser;
 	private static Object manyLibValueEnchanting;
 	private static Object manyLibValueRatio;
+	private static Object manyLibValueDungeonGlowstone;
 	// Suppresses the value-change callback while we are syncing values from the
 	// .cfg file into the ManyLib widgets (avoids a write-back cascade).
 	private static boolean syncingFromFile;
@@ -82,8 +84,10 @@ public final class ProjectEOConfig
 					"禁用能量凝聚器：开启后不再注册能量凝聚器（MK1 与 MK2）的合成配方。");
 			emcExchangeRatio = config.getFloat("emcExchangeRatio", "general", 1.0F, 1.0F, Integer.MAX_VALUE,
 					"买与卖emc的比例");
-			enableMatterEnchanting = config.getBoolean("enableMatterEnchanting", "general", false,
+				enableMatterEnchanting = config.getBoolean("enableMatterEnchanting", "general", false,
 					"允许为暗物质/红物质/宝石装备附魔，默认关闭。");
+				disableDungeonGlowstone = config.getBoolean("disableDungeonGlowstone", "general", false,
+					"禁用主世界与地下世界地牢中的荧石粉战利品。");
 			}
 			finally
 			{
@@ -176,8 +180,10 @@ public final class ProjectEOConfig
 			setBooleanProperty(config, "disableCondenser", disableCondenser,
 					"禁用能量凝聚器：开启后不再注册能量凝聚器（MK1 与 MK2）的合成配方。");
 			setFloatProperty(config, "emcExchangeRatio", emcExchangeRatio, "买与卖emc的比例");
-			setBooleanProperty(config, "enableMatterEnchanting", enableMatterEnchanting,
+				setBooleanProperty(config, "enableMatterEnchanting", enableMatterEnchanting,
 					"允许为暗物质/红物质/宝石装备附魔，默认关闭。");
+				setBooleanProperty(config, "disableDungeonGlowstone", disableDungeonGlowstone,
+					"禁用主世界与地下世界地牢中的荧石粉战利品。");
 		}
 		finally
 		{
@@ -320,11 +326,14 @@ public final class ProjectEOConfig
 			manyLibValueRatio = stringClass.getConstructor(String.class, String.class, String.class)
 					.newInstance("emcExchangeRatio", "1", "买与卖emc的比例");
 			manyLibValueEnchanting = booleanClass.getConstructor(String.class, boolean.class, String.class)
-					.newInstance("enableMatterEnchanting", false,
+						.newInstance("enableMatterEnchanting", false,
 							"允许为暗物质/红物质/宝石装备附魔，默认关闭。");
+			manyLibValueDungeonGlowstone = booleanClass.getConstructor(String.class, boolean.class, String.class)
+					.newInstance("disableDungeonGlowstone", false,
+							"禁用主世界与地下世界地牢中的荧石粉战利品。");
 
 			manyLibValues = List.of(manyLibValueTransmutation, manyLibValueCondenser,
-					manyLibValueRatio, manyLibValueEnchanting);
+					manyLibValueRatio, manyLibValueEnchanting, manyLibValueDungeonGlowstone);
 			manyLibTab = tabClass.getConstructor(String.class, List.class).newInstance("general", manyLibValues);
 
 			// Value-change callback: toggling an option in the ManyLib UI
@@ -416,7 +425,8 @@ public final class ProjectEOConfig
 		{
 			invokeBoolean(manyLibValueTransmutation, "setBooleanValue", disableTransmutationTable);
 			invokeBoolean(manyLibValueCondenser, "setBooleanValue", disableCondenser);
-			invokeBoolean(manyLibValueEnchanting, "setBooleanValue", enableMatterEnchanting);
+				invokeBoolean(manyLibValueEnchanting, "setBooleanValue", enableMatterEnchanting);
+				invokeBoolean(manyLibValueDungeonGlowstone, "setBooleanValue", disableDungeonGlowstone);
 			invokeString(manyLibValueRatio, "setValueFromString", formatRatio(emcExchangeRatio));
 		}
 		catch (Throwable ignored)
@@ -442,7 +452,8 @@ public final class ProjectEOConfig
 		{
 			disableTransmutationTable = invokeBoolean(manyLibValueTransmutation, "getBooleanValue");
 			disableCondenser = invokeBoolean(manyLibValueCondenser, "getBooleanValue");
-			enableMatterEnchanting = invokeBoolean(manyLibValueEnchanting, "getBooleanValue");
+				enableMatterEnchanting = invokeBoolean(manyLibValueEnchanting, "getBooleanValue");
+				disableDungeonGlowstone = invokeBoolean(manyLibValueDungeonGlowstone, "getBooleanValue");
 			String ratioText = invokeString(manyLibValueRatio, "getStringValue");
 			try
 			{

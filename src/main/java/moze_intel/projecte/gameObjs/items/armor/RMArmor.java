@@ -55,6 +55,11 @@ public class RMArmor extends ItemArmor implements ISpecialArmor, IRevealer, IGog
 		return false;
 	}
 
+	public EnumArmorType getArmorPiece()
+	{
+		return this.armorPiece;
+	}
+
 	@Override
 	public String getArmorType() {
 		if (armorPiece == null)

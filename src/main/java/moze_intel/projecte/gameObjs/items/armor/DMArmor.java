@@ -39,6 +39,11 @@ public class DMArmor extends ItemArmor implements ISpecialArmor
 		return true;
 	}
 
+	public EnumArmorType getArmorPiece()
+	{
+		return this.armorPiece;
+	}
+
 	@Override
 	public String getArmorType() {
 		if (armorPiece == null)
