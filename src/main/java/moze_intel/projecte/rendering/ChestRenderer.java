@@ -32,8 +32,19 @@ public class ChestRenderer extends TileEntitySpecialRenderer
 		if (chestTile.getWorldObj() != null)
 		{
 			direction = chestTile.getOrientation();
+			// Block metadata (2-5) is the reliable facing source (vanilla
+			// chest / matter furnace convention); the tile orientation is the
+			// fallback for blocks placed before this change.
+			int facing = chestTile.getWorldObj().getBlockMetadata(chestTile.xCoord, chestTile.yCoord, chestTile.zCoord);
+			// setFacingMeta convention: 2=NORTH, 3=SOUTH, 4=WEST, 5=EAST.
+			switch (facing)
+			{
+				case 2: direction = net.minecraftforge.common.util.ForgeDirection.NORTH; break;
+				case 3: direction = net.minecraftforge.common.util.ForgeDirection.SOUTH; break;
+				case 4: direction = net.minecraftforge.common.util.ForgeDirection.WEST; break;
+				case 5: direction = net.minecraftforge.common.util.ForgeDirection.EAST; break;
+			}
 		}
-		
 		this.bindTexture(texture);
 		GL11.glPushMatrix();
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);

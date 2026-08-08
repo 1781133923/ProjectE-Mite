@@ -47,6 +47,7 @@ public class RedStar extends PEToolBase
 		this.harvestMaterials.add(Material.wood);
 		this.harvestMaterials.add(Material.plants);
 		this.harvestMaterials.add(Material.vine);
+		this.harvestMaterials.add(Material.ice);
 
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOff);

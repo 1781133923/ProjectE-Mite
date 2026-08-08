@@ -161,7 +161,9 @@ public class TransmutationInventory implements IInventory
 		ItemSearchHelper searchHelper = ItemSearchHelper.create(filter);
 		if (inventory[LOCK_INDEX] != null)
 		{
-			int reqEmc = EMCHelper.getBuyValue(inventory[LOCK_INDEX]);
+			// Price the lock at its full-durability value (the output handed
+			// out is always the intact item).
+			int reqEmc = EMCHelper.getBuyValue(EMCHelper.getUndamagedCopy(inventory[LOCK_INDEX]));
 			
 			if (this.emc < reqEmc)
 			{

@@ -32,6 +32,12 @@ public final class PEToolMaterials
 	private static PEEquipmentMaterial redEquipment;
 	private static PEEquipmentMaterial gemEquipment;
 
+	// Current enchantability used by the enchantment table via
+	// Item.getItemEnchantability(). Updated from the projectEO config
+	// (updateEnchantability) - the plain constants stay 0 by default.
+	private static int darkEnchantability = 0;
+	private static int redEnchantability = 0;
+
 	// MITE durability values: wood 0.5, iron 8, ancient metal 16, mithril 64, adamantium 256
 	public static final float DARK_MATTER_DURABILITY = 512.0F;
 	public static final float RED_MATTER_DURABILITY = 1024.0F;
@@ -89,7 +95,7 @@ public final class PEToolMaterials
 
 	public static int getEnchantability(boolean red)
 	{
-		return red ? RED_MATTER_ENCHANTABILITY : DARK_MATTER_ENCHANTABILITY;
+		return red ? redEnchantability : darkEnchantability;
 	}
 
 	private static Material create(String name, float durability, int enchantability, float damageVsEntity,
@@ -122,6 +128,8 @@ public final class PEToolMaterials
 	 */
 	public static void updateEnchantability(int dark, int red, int gem)
 	{
+		darkEnchantability = dark;
+		redEnchantability = red;
 		if (darkEquipment != null) darkEquipment.setEnchantability(dark);
 		if (redEquipment != null) redEquipment.setEnchantability(red);
 		if (gemEquipment != null) gemEquipment.setEnchantability(gem);

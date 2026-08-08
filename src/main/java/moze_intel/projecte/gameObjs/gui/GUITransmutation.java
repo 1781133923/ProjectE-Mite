@@ -101,6 +101,17 @@ public class GUITransmutation extends GuiContainer
 		this.textBoxFilter.updateCursorCounter();
 	}
 
+	/**
+	 * While the search box is focused, typing letters like T (the chat key)
+	 * must not open the chat bar - MITE opens chat in any non-pausing GUI via
+	 * allowsImposedChat().
+	 */
+	@Override
+	public boolean allowsImposedChat()
+	{
+		return this.textBoxFilter == null || !this.textBoxFilter.isFocused();
+	}
+
 	@Override
 	protected void keyTyped(char par1, int par2)
 	{

@@ -55,6 +55,19 @@ public class AlchemicalChest extends BlockDirection
 	}
 	
 	@Override
+	public boolean onBlockPlacedMITE(World world, int x, int y, int z, int metadata, net.minecraft.Entity placer, boolean test_only)
+	{
+		// Store the facing in the block metadata (2-5) like the vanilla chest
+		// and the matter furnace - metadata reliably syncs to the client,
+		// while the tile-only orientation does not arrive in time on place.
+		if (placer instanceof EntityPlayer && !test_only)
+		{
+			setFacingMeta(world, x, y, z, (EntityPlayer) placer);
+		}
+		return super.onBlockPlacedMITE(world, x, y, z, metadata, placer, test_only);
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, net.minecraft.EnumFace face, float hitX, float hitY, float hitZ)
 	{
 		if (!world.isRemote) 

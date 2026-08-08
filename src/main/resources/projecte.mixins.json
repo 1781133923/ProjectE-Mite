@@ -10,6 +10,8 @@
 		"CondenserLockClickMixin",
 		"ProjectEMagicWeaponMixin",
 		"ProjectEElementalDamageMixin",
+		"ProjectEEnchantListMixin",
+		"ProjectESilkTouchMixin",
 		"ProjectEBedrockElementalMixin",
 		"ProjectEFireImmunityMixin",
 		"ProjectEUnbreakableArmorMixin",
@@ -25,7 +27,8 @@
 		"ProjectENovaNoDropMixin",
 		"ProjectEDungeonGlowstoneMixin",
 		"ProjectEServerStopMixin",
-		"ProjectETransmutationTablePickaxeMixin"
+		"ProjectETransmutationTablePickaxeMixin",
+		"ProjectEResourceVerifyMixin"
 	],
 	"client": [
 		"TransmutationGuiClickMixin",
@@ -38,7 +41,8 @@
 		"ProjectEStartGameMixin",
 		"ProjectECropsDeadIconMixin",
 		"ProjectECraftingSpeedMixin",
-		"ProjectEKeybindingsMixin"
+		"ProjectEKeybindingsMixin",
+		"ProjectEAchievementPagesMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

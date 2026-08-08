@@ -14,6 +14,13 @@ public class DMFurnaceTile extends RMFurnaceTile implements IInventory, ISidedIn
 
 	@Override
 	public void destroyInventory() {}
+
+	@Override
+	protected boolean shouldDoubleOre()
+	{
+		// 暗物质熔炉：50% 概率矿物翻倍。
+		return this.worldObj != null && this.worldObj.rand.nextInt(2) == 0;
+	}
 	public DMFurnaceTile()
 	{
 		this.inventory = new ItemStack[19];

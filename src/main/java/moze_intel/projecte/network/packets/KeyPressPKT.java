@@ -12,7 +12,6 @@ import moze_intel.projecte.config.ProjectEConfig;
 import moze_intel.projecte.gameObjs.ObjHandler;
 import moze_intel.projecte.gameObjs.items.armor.GemArmorBase;
 import moze_intel.projecte.gameObjs.items.armor.GemChest;
-import moze_intel.projecte.gameObjs.items.armor.GemFeet;
 import moze_intel.projecte.gameObjs.items.armor.GemHelmet;
 import moze_intel.projecte.handlers.PlayerChecks;
 import moze_intel.projecte.utils.PEKeybind;
@@ -62,15 +61,6 @@ public class KeyPressPKT implements IMessage
 						if (helm != null && helm.getItem() == ObjHandler.gemHelmet)
 						{
 							GemHelmet.toggleNightVision(helm, player);
-						}
-					}
-					else
-					{
-						ItemStack boots = player.inventory.armorItemInSlot(0);
-
-						if (boots != null && boots.getItem() == ObjHandler.gemFeet)
-						{
-							((GemFeet) ObjHandler.gemFeet).toggleStepAssist(boots, player);
 						}
 					}
 					break;

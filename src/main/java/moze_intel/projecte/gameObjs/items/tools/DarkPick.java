@@ -29,6 +29,7 @@ public class DarkPick extends PEToolBase
 		this.harvestMaterials.add(Material.stone);
 		this.harvestMaterials.add(Material.obsidian);
 		this.harvestMaterials.add(Material.netherrack);
+		this.harvestMaterials.add(Material.ice);
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOff);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOn);
@@ -105,6 +106,6 @@ public class DarkPick extends PEToolBase
 	@Override
 	public float getAttackDamage()
 	{
-		return 20.0F;
+		return 15.0F;
 	}
 }

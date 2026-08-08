@@ -415,7 +415,7 @@ public class RMFurnaceTile extends TileEmc implements IInventory, ISidedInventor
 			{
 				ISidedInventory inv = (ISidedInventory) tile;
 				
-				int[] slots = inv.getAccessibleSlotsFromSide(ForgeDirection.OPPOSITES[dir.ordinal()]);
+				int[] slots = inv.getAccessibleSlotsFromSide(ForgeDirection.OPPOSITES[dir.ordinalValue]);
 
 				if (slots.length > 0)
 				{
@@ -430,7 +430,7 @@ public class RMFurnaceTile extends TileEmc implements IInventory, ISidedInventor
 
 						for (int k : slots)
 						{
-							if (inv.canInsertItem(k, stack, Facing.oppositeSide[dir.ordinal()]))
+							if (inv.canInsertItem(k, stack, Facing.oppositeSide[dir.ordinalValue]))
 							{
 								ItemStack otherStack = inv.getStackInSlot(k);
 
@@ -487,13 +487,15 @@ public class RMFurnaceTile extends TileEmc implements IInventory, ISidedInventor
 		}
 	}
 	
-	private void smeltItem()
+	protected void smeltItem()
 	{
 		ItemStack toSmelt = inventory[1];
 		ItemStack smeltResult = FurnaceRecipes.smelting().getSmeltingResult(toSmelt, -1).copy();
 		ItemStack currentSmelted = getStackInSlot(outputSlot);
 
-		if (ItemHelper.getOreDictionaryName(toSmelt).startsWith("ore"))
+		// Red matter furnace always doubles ore; the dark matter furnace
+		// overrides shouldDoubleOre() to 50%.
+		if (ItemHelper.getOreDictionaryName(toSmelt).startsWith("ore") && shouldDoubleOre())
 		{
 			smeltResult.stackSize *= 2;
 		}
@@ -510,6 +512,15 @@ public class RMFurnaceTile extends TileEmc implements IInventory, ISidedInventor
 		decrStackSize(1, 1);
 	}
 	
+	/**
+	 * Whether this furnace doubles the smelted ore output. The red matter
+	 * furnace always doubles; subclasses may override.
+	 */
+	protected boolean shouldDoubleOre()
+	{
+		return true;
+	}
+
 	private boolean canSmelt() 
 	{
 		ItemStack toSmelt = inventory[1];

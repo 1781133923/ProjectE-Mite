@@ -283,6 +283,24 @@ public final class EMCHelper
 		}
 		return (int) (emc * ratio);
 	}
+	/**
+	 * A copy of the stack with any durability loss removed. The transmutation
+	 * table hands out the fully-repaired item, so purchases must be priced
+	 * (and the output given) at full durability instead of the worn value.
+	 */
+	public static ItemStack getUndamagedCopy(ItemStack stack)
+	{
+		if (stack == null)
+		{
+			return null;
+		}
+		ItemStack copy = stack.copy();
+		if (copy.isItemStackDamageable() && copy.getItemDamage() != 0 && !isUnbreakableProjectEItem(copy))
+		{
+			copy.setItemDamage(0);
+		}
+		return copy;
+	}
 
 	/**
 	 * Dark/red matter tools reuse MITE's durability bar as the charge bar

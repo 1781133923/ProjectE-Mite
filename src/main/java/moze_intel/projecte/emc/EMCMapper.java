@@ -157,6 +157,16 @@ public final class EMCMapper
 							// keep them out of the EMC map entirely.
 							continue;
 						}
+						if (item instanceof net.minecraft.ItemBlock)
+						{
+							net.minecraft.Block itemBlock = ((net.minecraft.ItemBlock) item).getBlock();
+							if (itemBlock != null && "cn.wensc.mitemod.extreme.block.BlockFancyRed".equals(itemBlock.getClass().getName()))
+							{
+								// Extreme red diamond ore (tile.fancy_red, 红钻矿石) is a gated
+								// material: only the gem itself is transmutable, the ore has no EMC.
+								continue;
+							}
+						}
 						emc.put(new SimpleStack(item.itemID, 1, normStackItem.damage), entry.getValue());
 						anyMatched = true;
 					}

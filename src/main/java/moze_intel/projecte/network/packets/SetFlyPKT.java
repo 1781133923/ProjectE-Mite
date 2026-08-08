@@ -34,11 +34,15 @@ public class SetFlyPKT implements IMessage
 		@Override
 		public IMessage onMessage(final SetFlyPKT message, MessageContext ctx)
 		{
-			Minecraft.getMinecraft().thePlayer.capabilities.allowFlying = message.flag;
-
-			if (!message.flag)
+			net.minecraft.EntityPlayer clientPlayer = Minecraft.getMinecraft().thePlayer;
+			if (clientPlayer != null)
 			{
-				Minecraft.getMinecraft().thePlayer.capabilities.isFlying = false;
+				clientPlayer.capabilities.allowFlying = message.flag;
+
+				if (!message.flag)
+				{
+					clientPlayer.capabilities.isFlying = false;
+				}
 			}
 
 			return null;

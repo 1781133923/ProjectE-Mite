@@ -32,6 +32,8 @@ public final class ProjectEOConfig
 	public static float emcExchangeRatio;
 	public static boolean enableMatterEnchanting;
 	public static boolean disableDungeonGlowstone;
+	// 为极难(Extreme)/拓展(BeyondExtreme)/ITE 的凭证、振金等物品注入 EMC 价格。
+	public static boolean enableExtremeItemEmc;
 
 	private static File configFile;
 	private static final List<IRecipe> removedTransmutationRecipes = new ArrayList<>();
@@ -47,9 +49,15 @@ public final class ProjectEOConfig
 	private static Object manyLibValueEnchanting;
 	private static Object manyLibValueRatio;
 	private static Object manyLibValueDungeonGlowstone;
+	private static Object manyLibValueExtremeEmc;
 	// Suppresses the value-change callback while we are syncing values from the
 	// .cfg file into the ManyLib widgets (avoids a write-back cascade).
 	private static boolean syncingFromFile;
+	// True only when the user actually edited a value in the ManyLib UI. save()
+	// only reads the widgets back when this is set; otherwise it keeps the
+	// values loaded from the .cfg, so a broken widget sync can never overwrite
+	// the file back to defaults.
+	private static boolean widgetsDirty;
 
 	private ProjectEOConfig()
 	{
@@ -88,6 +96,11 @@ public final class ProjectEOConfig
 					"允许为暗物质/红物质/宝石装备附魔，默认关闭。");
 				disableDungeonGlowstone = config.getBoolean("disableDungeonGlowstone", "general", false,
 					"禁用主世界与地下世界地牢中的荧石粉战利品。");
+				enableExtremeItemEmc = config.getBoolean("enableExtremeItemEmc", "general", true,
+					"为极难/拓展的凭证、振金等物品设置 EMC 价格。");
+			System.out.println("[ProjectEO] load: trans=" + disableTransmutationTable + " cond=" + disableCondenser
+					+ " ratio=" + emcExchangeRatio + " ench=" + enableMatterEnchanting
+					+ " glow=" + disableDungeonGlowstone + " manylib=" + (manyLibValueTransmutation != null));
 			}
 			finally
 			{
@@ -121,9 +134,27 @@ public final class ProjectEOConfig
 		}
 		if (manyLibValueTransmutation != null)
 		{
-			// The ManyLib screen calls save() when it closes; pick up any UI
-			// edits and re-apply the enchantability/recipe toggles.
-			syncStaticsFromManyLibValues();
+			try
+			{
+				System.out.println("[ProjectEO] save-before: dirty=" + widgetsDirty
+						+ " widgets trans=" + invokeBoolean(manyLibValueTransmutation, "getBooleanValue")
+						+ " cond=" + invokeBoolean(manyLibValueCondenser, "getBooleanValue")
+						+ " ench=" + invokeBoolean(manyLibValueEnchanting, "getBooleanValue")
+						+ " glow=" + invokeBoolean(manyLibValueDungeonGlowstone, "getBooleanValue"));
+			}
+			catch (Throwable ignored)
+			{
+			}
+			// Only trust the widgets when the user actually edited them in the
+			// UI; otherwise keep the values loaded from the .cfg file.
+			if (widgetsDirty)
+			{
+				syncStaticsFromManyLibValues();
+				widgetsDirty = false;
+			}
+			System.out.println("[ProjectEO] save: trans=" + disableTransmutationTable + " cond=" + disableCondenser
+					+ " ratio=" + emcExchangeRatio + " ench=" + enableMatterEnchanting
+					+ " glow=" + disableDungeonGlowstone);
 			updateEnchantabilityFromConfig();
 			applyRecipeToggles();
 		}
@@ -184,6 +215,8 @@ public final class ProjectEOConfig
 					"允许为暗物质/红物质/宝石装备附魔，默认关闭。");
 				setBooleanProperty(config, "disableDungeonGlowstone", disableDungeonGlowstone,
 					"禁用主世界与地下世界地牢中的荧石粉战利品。");
+				setBooleanProperty(config, "enableExtremeItemEmc", enableExtremeItemEmc,
+					"为极难/拓展的凭证、振金等物品设置 EMC 价格。");
 		}
 		finally
 		{
@@ -331,9 +364,13 @@ public final class ProjectEOConfig
 			manyLibValueDungeonGlowstone = booleanClass.getConstructor(String.class, boolean.class, String.class)
 					.newInstance("disableDungeonGlowstone", false,
 							"禁用主世界与地下世界地牢中的荧石粉战利品。");
+			manyLibValueExtremeEmc = booleanClass.getConstructor(String.class, boolean.class, String.class)
+					.newInstance("enableExtremeItemEmc", true,
+							"为极难/拓展的凭证、振金等物品设置 EMC 价格。");
 
 			manyLibValues = List.of(manyLibValueTransmutation, manyLibValueCondenser,
-					manyLibValueRatio, manyLibValueEnchanting, manyLibValueDungeonGlowstone);
+					manyLibValueRatio, manyLibValueEnchanting, manyLibValueDungeonGlowstone,
+					manyLibValueExtremeEmc);
 			manyLibTab = tabClass.getConstructor(String.class, List.class).newInstance("general", manyLibValues);
 
 			// Value-change callback: toggling an option in the ManyLib UI
@@ -344,6 +381,7 @@ public final class ProjectEOConfig
 					{
 						if ("onValueChanged".equals(method.getName()) && !syncingFromFile)
 						{
+							widgetsDirty = true;
 							applyFromManyLibValues();
 						}
 						return null;
@@ -427,14 +465,28 @@ public final class ProjectEOConfig
 			invokeBoolean(manyLibValueCondenser, "setBooleanValue", disableCondenser);
 				invokeBoolean(manyLibValueEnchanting, "setBooleanValue", enableMatterEnchanting);
 				invokeBoolean(manyLibValueDungeonGlowstone, "setBooleanValue", disableDungeonGlowstone);
+				invokeBoolean(manyLibValueExtremeEmc, "setBooleanValue", enableExtremeItemEmc);
 			invokeString(manyLibValueRatio, "setValueFromString", formatRatio(emcExchangeRatio));
 		}
-		catch (Throwable ignored)
+		catch (Throwable t)
 		{
+			System.out.println("[ProjectEO] widget sync error: " + t);
 		}
 		finally
 		{
 			syncingFromFile = false;
+			widgetsDirty = false;
+		}
+		// Read back the widget values to verify the sync actually took.
+		try
+		{
+			System.out.println("[ProjectEO] widgets after sync: trans=" + invokeBoolean(manyLibValueTransmutation, "getBooleanValue")
+					+ " cond=" + invokeBoolean(manyLibValueCondenser, "getBooleanValue")
+					+ " ench=" + invokeBoolean(manyLibValueEnchanting, "getBooleanValue")
+					+ " glow=" + invokeBoolean(manyLibValueDungeonGlowstone, "getBooleanValue"));
+		}
+		catch (Throwable ignored)
+		{
 		}
 	}
 
@@ -454,6 +506,7 @@ public final class ProjectEOConfig
 			disableCondenser = invokeBoolean(manyLibValueCondenser, "getBooleanValue");
 				enableMatterEnchanting = invokeBoolean(manyLibValueEnchanting, "getBooleanValue");
 				disableDungeonGlowstone = invokeBoolean(manyLibValueDungeonGlowstone, "getBooleanValue");
+				enableExtremeItemEmc = invokeBoolean(manyLibValueExtremeEmc, "getBooleanValue");
 			String ratioText = invokeString(manyLibValueRatio, "getStringValue");
 			try
 			{
@@ -483,7 +536,10 @@ public final class ProjectEOConfig
 
 	private static boolean invokeBoolean(Object target, String methodName, boolean value) throws Throwable
 	{
-		return (Boolean) target.getClass().getMethod(methodName, boolean.class).invoke(target, value);
+		// setBooleanValue() is void: invoke() returns null, so unboxing it
+		// threw NPE and the widget sync aborted on the first option.
+		target.getClass().getMethod(methodName, boolean.class).invoke(target, value);
+		return value;
 	}
 
 	private static boolean invokeBoolean(Object target, String methodName) throws Throwable
@@ -493,11 +549,63 @@ public final class ProjectEOConfig
 
 	private static String invokeString(Object target, String methodName, String value) throws Throwable
 	{
-		return (String) target.getClass().getMethod(methodName, String.class).invoke(target, value);
+		target.getClass().getMethod(methodName, String.class).invoke(target, value);
+		return value;
 	}
 
 	private static String invokeString(Object target, String methodName) throws Throwable
 	{
 		return (String) target.getClass().getMethod(methodName).invoke(target);
+	}
+
+	/**
+	 * Injects EMC prices for the Extreme / BeyondExtreme / MITE-ITE boss
+	 * vouchers and the vibranium chain, gated by the enableExtremeItemEmc
+	 * config toggle. Called right before the EMC mapping runs (after
+	 * CustomEMCParser.readUserData), so the values land in the mapper's
+	 * userValues map. Vouchers are end-game boss drops; crafted vouchers and
+	 * vibranium are priced from their recipe chains.
+	 */
+	public static void applyExtremeItemEmcValues()
+	{
+		if (!enableExtremeItemEmc)
+		{
+			return;
+		}
+		try
+		{
+			putItemEmc(Class.forName("cn.wensc.mitemod.extreme.register.EXItemsRegistryInit"),
+					new String[]{"voucherExchanger", "voucherDoor", "voucherZombieLord", "voucherWitch",
+							"voucherPigman", "voucherAnnihilationSkeleton", "voucherCore"},
+					new int[]{8192, 8192, 16384, 8192, 57344, 57344, 229376});
+			putItemEmc(Class.forName("net.moddedmite.mitemod.bex.register.BEXItems"),
+					new String[]{"voucherGhast", "voucherBedrock", "voucherVibraniumDoor",
+							"voucherGoldBodyCore", "voucherSkeletonBoss", "voucherUltimateAnnihilation",
+							"voucherSpiderQueen", "voucherZombieMiner"},
+					new int[]{32768, 32768, 65536, 163840, 32768, 65536, 32768, 8192});
+			// 振金锭 = 4 秘银粒 + 4 艾德曼锭 + 1 核心凭证; 振金粒 = 锭 / 9。
+			putItemEmc(Class.forName("net.xiaoyu233.mitemod.miteite.item.MITEITEItemRegistryInit"),
+					new String[]{"VIBRANIUM_INGOT", "VIBRANIUM_NUGGET"},
+					new int[]{498800, 55422});
+		}
+		catch (Throwable t)
+		{
+			// Extreme / BEX / ITE not installed - nothing to price.
+		}
+	}
+
+	private static void putItemEmc(Class<?> registryClass, String[] fieldNames, int[] emcs) throws Exception
+	{
+		for (int i = 0; i < fieldNames.length; i++)
+		{
+			Object item = registryClass.getField(fieldNames[i]).get(null);
+			if (item instanceof net.minecraft.Item)
+			{
+				net.minecraft.ItemStack stack = new net.minecraft.ItemStack((net.minecraft.Item) item, 1, 0);
+				moze_intel.projecte.config.CustomEMCParser.userValues.put(
+						moze_intel.projecte.emc.NormalizedSimpleStack.getFor(stack), emcs[i]);
+				System.out.println("[ProjectEO] extreme EMC: " + fieldNames[i] + " = " + emcs[i]);
+			}
+		}
 	}
 }

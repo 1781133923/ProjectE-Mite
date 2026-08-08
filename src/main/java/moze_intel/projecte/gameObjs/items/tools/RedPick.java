@@ -24,6 +24,7 @@ public class RedPick extends DarkPick
 		this.harvestMaterials.add(Material.stone);
 		this.harvestMaterials.add(Material.obsidian);
 		this.harvestMaterials.add(Material.netherrack);
+		this.harvestMaterials.add(Material.ice);
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.rmFurnaceOff);
 		this.harvestBlocks.add(ObjHandler.rmFurnaceOn);
@@ -53,6 +54,6 @@ public class RedPick extends DarkPick
 	@Override
 	public float getAttackDamage()
 	{
-		return 35.0F;
+		return 20.0F;
 	}
 }

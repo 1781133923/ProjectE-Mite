@@ -19,7 +19,10 @@ public class SlotOutput extends Slot
 	@Override
 	public ItemStack decrStackSize(int amount)
 	{
-		ItemStack stack = getStack().copy();
+		// Always price and hand out the fully-repaired item: taking a worn
+		// tool at its discounted EMC while receiving the intact tool lets
+		// players dupe EMC by repeatedly locking and taking it.
+		ItemStack stack = EMCHelper.getUndamagedCopy(getStack());
 		stack.stackSize = amount;
 		int emcValue = amount * EMCHelper.getBuyValue(stack);
 		if (emcValue > inv.emc) {
@@ -47,7 +50,7 @@ public class SlotOutput extends Slot
 	public boolean canTakeStack(EntityPlayer player)
 	{
 		if (getHasStack()) {
-			return EMCHelper.getBuyValue(getStack()) <= inv.emc;
+			return EMCHelper.getBuyValue(EMCHelper.getUndamagedCopy(getStack())) <= inv.emc;
 		}
 		return true;
 	}

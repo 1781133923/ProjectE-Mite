@@ -155,6 +155,11 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	 * pickaxes and hammers, so this is used by the elemental mixin to decide
 	 * whether a ProjectE tool may damage them.
 	 */
+	public String getPrimaryToolClass()
+	{
+		return pePrimaryToolClass;
+	}
+
 	public boolean isMiningWeapon()
 	{
 		return "hammer".equals(pePrimaryToolClass)
@@ -163,9 +168,9 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	}
 
 	/**
-	 * Whether this tool may break normally-unbreakable blocks (hardness -1)
-	 * with its AOE right-click dig. Dark/red matter hammers may break
-	 * bedrock, mantle and core; the red matter morning star only bedrock.
+	 * Whether this tool may break bedrock/mantle/core with its AOE dig.
+	 * Only the red matter morning star's right-click AOE may break bedrock;
+	 * dark/red hammers and the morning star cannot break mantle/core.
 	 */
 	public boolean canBreakUnbreakable(net.minecraft.Block block, int metadata)
 	{
@@ -196,10 +201,30 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 				|| block instanceof net.minecraft.BlockMantleOrCore;
 	}
 
+	/**
+	 * Whether the AOE dig (right-click flat layer or left-click mode AOE) may
+	 * remove this block. Bedrock/mantle/core are governed solely by
+	 * canBreakUnbreakable - BeyondExtreme raises their hardness from -1 to
+	 * 100, so the -1-hardness check alone would let dark/red hammers break
+	 * them.
+	 */
+	public boolean canAoeDigBlock(net.minecraft.Block block, int metadata)
+	{
+		if (isUnbreakableMatterBlock(block, metadata))
+		{
+			return canBreakUnbreakable(block, metadata);
+		}
+		return block != null && block.getBlockHardness(metadata) != -1;
+	}
+
 	@Override
 	public float getStrVsBlock(Block block, int metadata)
 	{
 		if (!isEffectiveAgainstBlock(block, metadata))
+		{
+			return 0.0F;
+		}
+		if (isUnbreakableMatterBlock(block, metadata) && !canBreakUnbreakable(block, metadata))
 		{
 			return 0.0F;
 		}
@@ -271,6 +296,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 						+ stack.stackTagCompound.getInteger("tool_exp"));
 			}
 		}
+		addIteModifiersToTooltip(stack, list);
 		// Dynamic Extreme gem display: only when Extreme is loaded and the
 		// stack actually carries a gem list.
 		if (stack != null && stack.hasTagCompound() && stack.stackTagCompound.hasKey("Gems"))
@@ -340,6 +366,91 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	public float getEquipmentExpBounce(ItemStack stack)
 	{
 		return 0.0F;
+	}
+
+	/**
+	 * MITE-ITE injects onItemLevelUp into Item as a NO-OP - the real modifier
+	 * roll lives in ItemToolTrans (ItemTool only). Non-ItemTool items that use
+	 * ITE's tool level system must implement it themselves, otherwise they
+	 * level up forever without ever rolling a modifier. Mirror ITE here: pick
+	 * a random applicable tool modifier and write/increment it in the
+	 * "modifiers" compound. Without ITE this method is inert.
+	 */
+	public void onItemLevelUp(net.minecraft.NBTTagCompound nbt, net.minecraft.EntityPlayer player, net.minecraft.ItemStack stack)
+	{
+		try
+		{
+			Class<?> modifierUtils = Class.forName("net.xiaoyu233.mitemod.miteite.item.ModifierUtils");
+			Object applicable = modifierUtils.getMethod("getAllCanBeAppliedToolModifiers", net.minecraft.ItemStack.class)
+					.invoke(null, stack);
+			Object chosen = modifierUtils.getMethod("getModifierWithWeight",
+					java.util.List.class, java.util.Random.class).invoke(null, applicable, player.getRNG());
+			if (chosen == null || nbt == null)
+			{
+				return;
+			}
+			if (!nbt.hasKey("modifiers"))
+			{
+				nbt.setCompoundTag("modifiers", new net.minecraft.NBTTagCompound());
+			}
+			net.minecraft.NBTTagCompound modifiers = nbt.getCompoundTag("modifiers");
+			Class<?> toolModifierTypes = Class.forName("net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes");
+			String nbtName = (String) toolModifierTypes.getField("nbtName").get(chosen);
+			modifiers.setInteger(nbtName, modifiers.getInteger(nbtName) + 1);
+		}
+		catch (Throwable t)
+		{
+			// ITE absent or its API changed - the level display still works,
+			// the modifier roll is simply skipped.
+		}
+	}
+
+	/**
+	 * Displays the MITE-ITE tool modifiers currently rolled on the stack
+	 * (e.g. damage/sharpness, slowdown, demon power) in the Shift tooltip,
+	 * mirroring ITE's ItemTool addInformation. Inert without ITE.
+	 */
+	private static void addIteModifiersToTooltip(net.minecraft.ItemStack stack, java.util.List list)
+	{
+		if (stack == null || stack.stackTagCompound == null || !stack.stackTagCompound.hasKey("modifiers"))
+		{
+			return;
+		}
+		try
+		{
+			Class<?> toolModifierTypes = Class.forName("net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes");
+			Object[] values = (Object[]) toolModifierTypes.getMethod("values").invoke(null);
+			net.minecraft.NBTTagCompound modifiers = stack.stackTagCompound.getCompoundTag("modifiers");
+			if (modifiers.hasNoTags())
+			{
+				return;
+			}
+			// Mirror ITE's ItemTool addInformation: header line, then each
+			// rolled modifier as "colour + display name + roman level".
+			list.add(net.minecraft.I18n.getString("miteite.tool.modifier.modifiers"));
+			java.lang.reflect.Method toRoman = Class.forName("net.xiaoyu233.mitemod.miteite.util.StringUtil")
+					.getMethod("intToRoman", int.class);
+			for (Object modifier : values)
+			{
+				String nbtName = (String) toolModifierTypes.getField("nbtName").get(modifier);
+				if (!modifiers.hasKey(nbtName))
+				{
+					continue;
+				}
+				int level = modifiers.getInteger(nbtName);
+				Object display = toolModifierTypes.getMethod("getDisplayName").invoke(modifier);
+				String name = display instanceof net.minecraft.ChatMessageComponent
+						? ((net.minecraft.ChatMessageComponent) display).toString() : nbtName;
+				String roman = String.valueOf(toRoman.invoke(null, level));
+				Object color = toolModifierTypes.getField("color").get(modifier);
+				list.add("" + (color instanceof net.minecraft.EnumChatFormatting
+						? (net.minecraft.EnumChatFormatting) color : net.minecraft.EnumChatFormatting.DARK_AQUA)
+						+ name + roman);
+			}
+		}
+		catch (Throwable t)
+		{
+		}
 	}
 
 	/**
@@ -416,7 +527,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	public Multimap getAttrModifiers(ItemStack stack)
 	{
 		Multimap multimap = com.google.common.collect.HashMultimap.create();
-		float damage = getAttackDamage();
+		float damage = getAttackDamage() + getIteDamageModifier(stack);
 		if (damage > 0.0F && hasAttributeDamage())
 		{
 			multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(),
@@ -424,6 +535,40 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 		}
 		return multimap;
 	}
+
+	/**
+	 * Reads a MITE-ITE tool modifier value (e.g. the random "damage" or
+	 * "demon" modifier granted on level-up) from the stack NBT via
+	 * reflection. Returns 0 when ITE is not installed or the stack carries no
+	 * such modifier, so the weapon keeps its listed attack damage and gains
+	 * the level-up bonus on top once ITE's tool system has written it.
+	 */
+	private static float getIteModifierValue(ItemStack stack, String fieldName)
+	{
+		if (stack == null || stack.stackTagCompound == null)
+		{
+			return 0.0F;
+		}
+		try
+		{
+			Class<?> typeClass = Class.forName("net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes");
+			Object modifier = typeClass.getField(fieldName).get(null);
+			java.lang.reflect.Method getValue = typeClass.getMethod("getModifierValue", net.minecraft.NBTTagCompound.class);
+			Object value = getValue.invoke(modifier, stack.stackTagCompound);
+			return value instanceof Number ? ((Number) value).floatValue() : 0.0F;
+		}
+		catch (Throwable t)
+		{
+			return 0.0F;
+		}
+	}
+
+	private static float getIteDamageModifier(ItemStack stack)
+	{
+		return getIteModifierValue(stack, "DAMAGE_MODIFIER");
+	}
+
+
 
 	/* ------------------------------------------------------------------ */
 	/* MITE durability / decay                                            */
@@ -479,6 +624,22 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 	public boolean isHarmedBy(DamageSource source)
 	{
 		return false;
+	}
+
+	/**
+	 * MITE melee "hand damage" counterattack (EntityLiving.onMeleeAttacked):
+	 * a melee-attacked mob may hit the attacker back - gelatinous cubes 100%
+	 * with their attack-strength multiplier, fire elementals 100% with 1,
+	 * normal mobs 12.5% with 1 - UNLESS the attacker holds an item that
+	 * prevents hand damage (vanilla: instanceof ItemTool, or stick/bone).
+	 * ProjectE tools extend ItemMode instead of ItemTool, so without this
+	 * override every melee hit (including the C-key special attack) was
+	 * treated as a bare-hand hit and slimes reflected damage back.
+	 */
+	@Override
+	public boolean preventsHandDamage()
+	{
+		return true;
 	}
 
 	@Override
@@ -838,7 +999,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 					Block b = world.getBlock(i, j, k);
 
 					if (b != Blocks.air
-							&& b.getBlockHardness(world.getBlockMetadata(i, j, k)) != -1
+							&& canAoeDigBlock(b, world.getBlockMetadata(i, j, k))
 							&& PlayerHelper.hasBreakPermission(((ServerPlayer) player), i, j, k)
 							&& (canHarvestBlock(block, new ItemStack(this)) || ForgeHooks.canToolHarvestBlock(block, world.getBlockMetadata(i, j, k), new ItemStack(this))))
 					{
@@ -906,9 +1067,7 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 					Block b = world.getBlock(i, j, k);
 
 					if (b != Blocks.air
-							&& (b.getBlockHardness(world.getBlockMetadata(i, j, k)) != -1
-									|| (isUnbreakableMatterBlock(b, world.getBlockMetadata(i, j, k))
-											&& canBreakUnbreakable(b, world.getBlockMetadata(i, j, k))))
+							&& canAoeDigBlock(b, world.getBlockMetadata(i, j, k))
 							&& canHarvestBlock(b, stack)
 							&& PlayerHelper.hasBreakPermission(((ServerPlayer) player), i, j, k)
 							&& consumeFuel(player, stack, emcCost, true)

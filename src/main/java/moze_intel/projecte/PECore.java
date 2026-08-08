@@ -169,6 +169,8 @@ public class PECore
 		long start = System.currentTimeMillis();
 
 		CustomEMCParser.readUserData();
+		// 极难/拓展物品的 EMC 价格（受 projectEO.cfg 的 enableExtremeItemEmc 开关控制）。
+		moze_intel.projecte.config.ProjectEOConfig.applyExtremeItemEmcValues();
 
 		PELogger.logInfo("Starting server-side EMC mapping.");
 

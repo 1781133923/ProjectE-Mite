@@ -16,6 +16,7 @@ public class RedHammer extends DarkHammer
 		this.harvestMaterials.add(Material.stone);
 		this.harvestMaterials.add(Material.obsidian);
 		this.harvestMaterials.add(Material.netherrack);
+		this.harvestMaterials.add(Material.ice);
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.rmFurnaceOff);
 		this.harvestBlocks.add(ObjHandler.rmFurnaceOn);

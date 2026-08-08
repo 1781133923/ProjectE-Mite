@@ -232,8 +232,8 @@ pe.gem.feet.lorename=飓风长靴
 
 pe.gem.nightvision_tooltip=夜视模式:
 pe.gem.nightvision.prompt=按 [%s + %s] 键切换夜视模式
-pe.gem.stepassist_tooltip=自动跳跃:
-pe.gem.stepassist.prompt=按[%s]键切换自动跳跃
+pe.gem.stepassist_tooltip=如履平地:
+pe.gem.stepassist.prompt=按[%s]键切换如履平地
 
 pe.gemdensity.blacklist=黑名单
 pe.gemdensity.mode_switch=转换目标设定为: %s

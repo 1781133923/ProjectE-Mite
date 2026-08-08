@@ -35,6 +35,7 @@ public class ProjectE implements ModInitializer {
         ModResourceManager.addResourcePackDomain(MOD_ID);
         MITEEvents.MITE_EVENT_BUS.register(new MITEEventBridge());
         registerCarryOnPluginIfPresent();
+        registerIteWeaponCriteriaIfPresent();
 
         PECore.instance = new PECore();
 		PECore.proxy = FishModLoader.isServer()
@@ -87,6 +88,16 @@ public class ProjectE implements ModInitializer {
                 if (event.player() != null) {
                     net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
                             new cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent(event.player()));
+                }
+            }
+
+            @Override
+            public void onPlayerCrossDimension(moddedmite.rustedironcore.api.event.events.PlayerCrossDimensionEvent event) {
+                // FishModLoader does not fire Forge's dimension-change event; RIC's
+                // native cross-dimension event is the reliable hook. Re-sync carried
+                // flight/step because the client re-creates its player entity.
+                if (event.player() != null) {
+                    moze_intel.projecte.handlers.PlayerChecks.onPlayerChangeDimension(event.player());
                 }
             }
         });
@@ -354,6 +365,34 @@ public class ProjectE implements ModInitializer {
                   || item instanceof moze_intel.projecte.gameObjs.items.EvertideAmulet
                   || item instanceof moze_intel.projecte.gameObjs.items.VolcaniteAmulet;
       }
+
+    /**
+     * Registers the ProjectE weapons with MITE-ITE's weapon registry so their
+     * tool level-ups roll the weapon-only modifiers (damage/sharpness,
+     * slowdown, demon power) instead of the tool-only pool. ITE's default
+     * weapon criteria only match ItemSword / ItemBattleAxe / ItemWarHammer,
+     * which the ProjectE tools (extending ItemMode) never satisfy. Done
+     * reflectively - without ITE this is a no-op.
+     */
+    private static void registerIteWeaponCriteriaIfPresent() {
+        try {
+            Class<?> registryClass = Class.forName("net.xiaoyu233.mitemod.miteite.registry.ITERegistryImpl");
+            java.lang.reflect.Field field = registryClass.getField("weaponCriteria");
+            java.util.List criteria = (java.util.List) field.get(null);
+            criteria.add((java.util.function.Predicate<net.minecraft.Item>) item ->
+                    item instanceof moze_intel.projecte.gameObjs.items.tools.DarkSword
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.RedSword
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.RedKatar
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.RedStar
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.DarkHammer
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.RedHammer
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.DarkAxe
+                    || item instanceof moze_intel.projecte.gameObjs.items.tools.RedAxe);
+            System.out.println("[ProjectE] Registered ProjectE weapons with ITE weapon criteria");
+        } catch (Throwable noIte) {
+            // ITE not installed - the tools simply keep their own level display.
+        }
+    }
 
     /**
      * Optional CarryOn integration: forbid carrying the dark matter pedestal

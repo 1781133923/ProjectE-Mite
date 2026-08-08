@@ -78,12 +78,16 @@ public final class PlayerHelper
 
 	public static IInventory getBaubles(EntityPlayer player)
 	{
-		if (!Loader.isModLoaded("Baubles"))
-		{
-			return null;
-		} else
+		// Baubles is a hard dependency; the Loader.isModLoaded gate was broken
+		// here (no mod container is ever registered), so it always returned
+		// null and carried items in bauble slots were never detected.
+		try
 		{
 			return BaublesApi.getBaubles(player);
+		}
+		catch (Throwable t)
+		{
+			return null;
 		}
 	}
 

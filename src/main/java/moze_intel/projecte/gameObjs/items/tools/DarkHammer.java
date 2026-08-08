@@ -23,6 +23,7 @@ public class DarkHammer extends PEToolBase
 		this.harvestMaterials.add(Material.stone);
 		this.harvestMaterials.add(Material.obsidian);
 		this.harvestMaterials.add(Material.netherrack);
+		this.harvestMaterials.add(Material.ice);
 		this.harvestBlocks.add(ObjHandler.matterBlock);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOff);
 		this.harvestBlocks.add(ObjHandler.dmFurnaceOn);
@@ -71,6 +72,15 @@ public class DarkHammer extends PEToolBase
 	public float getAttackDamage()
 	{
 		return 15.0F;
+	}
+	/**
+	 * Dark/red matter hammers cannot break bedrock, mantle or core - only the
+	 * red matter morning star's right-click AOE may break bedrock.
+	 */
+	@Override
+	public boolean canBreakUnbreakable(net.minecraft.Block block, int metadata)
+	{
+		return false;
 	}
 	@Override
 	public boolean isEmcMode(ItemStack stack)

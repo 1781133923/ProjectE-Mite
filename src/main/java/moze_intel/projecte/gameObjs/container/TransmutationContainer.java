@@ -85,7 +85,11 @@ public class TransmutationContainer extends Container
 		}
 		
 		ItemStack stack = slot.getStack();
-		ItemStack newStack = stack.copy();
+		// The transmutation table always hands out the intact item, so it must
+		// be priced at its full-durability EMC - a worn tool would otherwise
+		// be bought at its discounted value and come out fully repaired (EMC
+		// dupe).
+		ItemStack newStack = moze_intel.projecte.utils.EMCHelper.getUndamagedCopy(stack);
 		
 		if (slotIndex <= 7) //Input Slots
 		{

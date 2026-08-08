@@ -18,6 +18,7 @@ public class Blocks {
     public static final Block cobblestone = Block.cobblestone;
     public static final Block deadbush = Block.deadBush;
     public static final Block diamond_block = Block.blockDiamond;
+    public static final Block emerald_block = Block.blockEmerald;
     public static final Block dirt = Block.dirt;
     public static final Block double_plant = Block.tallGrass;
     public static final Block dragon_egg = Block.dragonEgg;

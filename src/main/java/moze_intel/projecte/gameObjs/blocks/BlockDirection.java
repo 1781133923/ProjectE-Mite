@@ -28,10 +28,14 @@ public abstract class BlockDirection extends BlockContainer
 	public boolean onBlockPlacedMITE(World world, int x, int y, int z, int metadata, net.minecraft.Entity placer, boolean test_only)
 	{
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		
 		if (tile instanceof TileEmcDirection && placer instanceof EntityLivingBase)
 		{
-			((TileEmcDirection) tile).setRelativeOrientation((EntityLivingBase) placer, false);
+			// sendPacket=true pushes OrientationSyncPKT to the client, and
+			// markBlockForUpdate forces the block/tile data re-send - the
+			// client otherwise keeps the default SOUTH tile it created from
+			// the initial placement packet.
+			((TileEmcDirection) tile).setRelativeOrientation((EntityLivingBase) placer, true);
+			world.markBlockForUpdate(x, y, z);
 		}
 		return true;
 	}
@@ -79,6 +83,9 @@ public abstract class BlockDirection extends BlockContainer
 			if (tile instanceof TileEmcDirection)
 			{
 				((TileEmcDirection) tile).setRelativeOrientation(player, true);
+				// Keep the block metadata facing in sync for renderers that
+				// read it (alchemical chest / furnaces).
+				setFacingMeta(world, x, y, z, player);
 			}
 			else
 			{

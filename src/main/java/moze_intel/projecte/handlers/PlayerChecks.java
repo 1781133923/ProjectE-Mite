@@ -23,6 +23,8 @@ public final class PlayerChecks
 	private static final Set<ServerPlayer> hadFlightItem = Sets.newHashSet();
 	private static final java.util.Map<ServerPlayer, Integer> projectileCooldowns = new java.util.HashMap<>();
 	private static final java.util.Map<ServerPlayer, Integer> gemChestCooldowns = new java.util.HashMap<>();
+	private static final java.util.Map<ServerPlayer, Integer> dimensionResyncTicks = new java.util.HashMap<>();
+	private static final java.util.Map<ServerPlayer, Integer> lastDimensions = new java.util.HashMap<>();
 
 	public static void resetProjectileCooldown(ServerPlayer player) {
 		projectileCooldowns.put(player, ProjectEConfig.projectileCooldown);
@@ -68,6 +70,34 @@ public final class PlayerChecks
 			gemChestCooldowns.put(player, gemChestCooldowns.get(player) - 1);
 		}
 
+		// FishModLoader does not reliably fire the Forge dimension-change event,
+		// so detect the switch here in the player tick and start the flight/step
+		// resync window (the client re-creates its player entity and the one-shot
+		// packet can be lost).
+		Integer lastDim = lastDimensions.get(player);
+		int currentDim = player.dimension;
+		if (lastDim == null || lastDim.intValue() != currentDim)
+		{
+			lastDimensions.put(player, currentDim);
+			startDimensionResync(player);
+		}
+
+		// Keep re-sending until the new client player settles.
+		Integer resync = dimensionResyncTicks.get(player);
+		if (resync != null)
+		{
+			if (resync > 1)
+			{
+				dimensionResyncTicks.put(player, resync - 1);
+			}
+			else
+			{
+				dimensionResyncTicks.remove(player);
+			}
+			PlayerHelper.updateClientServerFlight(player, shouldPlayerFly(player));
+			PlayerHelper.updateClientServerStepHeight(player, shouldPlayerStep(player) ? 1.01F : 0.5F);
+		}
+
 		if (!shouldPlayerFly(player) && hadFlightItem.contains(player))
 		{
 			if (player.capabilities.allowFlying)
@@ -94,9 +124,9 @@ public final class PlayerChecks
 		}
 		else
 		{
-			if (player.stepHeight < 1.0F)
+			if (player.stepHeight < 1.01F)
 			{
-				PlayerHelper.updateClientServerStepHeight(player, 1.0F);
+				PlayerHelper.updateClientServerStepHeight(player, 1.01F);
 			}
 		}
 	}
@@ -104,9 +134,19 @@ public final class PlayerChecks
 
 	public static void onPlayerChangeDimension(ServerPlayer playerMP)
 	{
-		// Resend everything needed on clientside (all except fire resist)
-		PlayerHelper.updateClientServerFlight(playerMP, playerMP.capabilities.allowFlying);
-		PlayerHelper.updateClientServerStepHeight(playerMP, shouldPlayerStep(playerMP) ? 1.0F : 0.5F);
+		startDimensionResync(playerMP);
+	}
+
+	private static void startDimensionResync(ServerPlayer player)
+	{
+		// The client re-creates its player entity on dimension change: the single
+		// flight packet can be applied to the old instance and get lost. Drop the
+		// cached flight state and keep re-sending for a short window.
+		hadFlightItem.remove(player);
+		dimensionResyncTicks.put(player, 20);
+		boolean shouldFly = shouldPlayerFly(player);
+		PlayerHelper.updateClientServerFlight(player, shouldFly);
+		PlayerHelper.updateClientServerStepHeight(player, shouldPlayerStep(player) ? 1.01F : 0.5F);
 	}
 
 	private static boolean shouldPlayerFly(ServerPlayer player)
@@ -285,6 +325,8 @@ public final class PlayerChecks
 		gemArmorReadyChecks.clear();
 		hadFlightItem.clear();
 		projectileCooldowns.clear();
+		dimensionResyncTicks.clear();
+		lastDimensions.clear();
 	}
 
 	public static void removePlayerFromLists(ServerPlayer player)
@@ -293,5 +335,7 @@ public final class PlayerChecks
 		gemArmorReadyChecks.remove(player);
 		hadFlightItem.remove(player);
 		projectileCooldowns.remove(player);
+		dimensionResyncTicks.remove(player);
+		lastDimensions.remove(player);
 	}
 }
