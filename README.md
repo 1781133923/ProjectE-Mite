@@ -1,24 +1,43 @@
 # ProjectE-MITE
 
-ProjectE ported to **MITE 1.6.4** via FishModLoader (FML v3.4.3, Fabric-style
-`fml.mod.json` entrypoints + mixins, fml-loom Gradle build).
+ProjectE（等价交换）移植到 **MITE 1.6.4**（FishModLoader / FML 3.4.x）。
 
-## Requirements
+等价交换的核心是 **EMC（等价物质）**：每种物品/方块都有一个 EMC 价值，你可以把东西“卖”进转化桌换取 EMC，再用 EMC 兑换任何已经学会的物品，实现“物质守恒”式的炼金玩法。
 
-- JDK 17
-- `1.6.4-MITE-HDS_FMLv3.4.3.jar` (MITE runtime with FML) — currently referenced
-  by an absolute path in `build.gradle`; adjust before building.
-- Third-party jars expected under `libs/` (not committed): `baubles-1.1.2.jar`,
-  `pinin-lib-1.6.0.jar`, `gson.jar`, `commons-lang3.jar`, `RustedIronCore-1.5.5.jar`.
+## 主要功能
 
-## Build & run
+- **转化桌 / 便携式转化桌**：放入物品学习配方，消耗 EMC 兑换任意已学习物品；支持搜索（含拼音搜索）、Shift 一键取整组。
+- **EMC 系统**：内置大量物品/方块/流体的默认 EMC，可自动从合成与烧炼配方反推价值，也支持自定义 EMC 映射（`config/ProjectE/custom_emc.cfg`）。
+- **炼金术之袋**：17 种颜色、互相独立的空间，方便随身携带海量物品。
+- **能量凝聚器（MK1 / MK2）**：消耗 EMC 自动复制指定物品。
+- **暗物质 / 红物质工具**：锤、镐、斧、锄、铲、剪刀、剑、拳剑、钉头锤等；可充能（耐久条即充能条），右键 AOE 挖掘/范围技能，G 键切换模式，其中“EMC 模式”能把挖到的方块直接转化为 EMC。
+- **暗物质 / 红物质 / 宝石护甲**：高额防护、防摔落、抗击退、移动与飞行加速，附魔可配置开启；宝石套还带夜视、快速回血回饥饿、物理与魔法伤害减免等套装效果。
+- **炼金戒指 / 护符 / 宝石**：身之宝石、灵魂宝石、生命宝石、时间洪流怀表、丰收女神之戒、黑洞指环、熔岩/潮汐护符等；随身携带生效，也可放入暗物质台座获得更强范围效果。
+- **暗物质台座**：放置戒指/护符自动生效台座功能，右键可手动开关。
 
-```bash
-./gradlew build
-./gradlew runClient
-```
+## MITE 适配
 
-## License
+- 全面使用 MITE 原生的耐久、护甲、挖掘等级、附魔机制（材料驱动）。
+- 配方适配 MITE 工作台等级与合成速度（铁级/秘银级等）。
+- 暗物质/红物质熔炉可无视 MITE 烧炼等级直接烧制。
+- 物品/方块使用自动 ID 分配
+- 主世界与地下世界地牢会生成荧石粉战利品（可在配置中关闭）。
 
-This is a port of [ProjectE](https://github.com/sinkillerj/ProjectE) (MIT).
-Third-party libraries are not redistributed in this repository.
+## 配置
+
+`config/projectEO.cfg`（安装 ManyLib 后可在游戏内菜单直接修改）：
+
+- 禁用转化桌 / 禁用能量凝聚器（同时移除对应合成配方）
+- 买卖 EMC 比例（8 = 卖出 1/8、买入 8 倍；1 = 等值）
+- 允许暗物质/红物质/宝石装备附魔（60 / 80 / 100 附魔点数）
+- 禁用荧石粉地牢战利品
+
+## 依赖
+
+- RustedIronCore（运行时前置）
+- Baubles（饰品栏支持）
+- 可选：ManyLib（游戏内配置界面）、EMI（配方查看）、PinIn-Lib（转化桌拼音搜索）
+
+## 版权
+
+基于 [ProjectE](https://github.com/sinkillerj/ProjectE)（MIT）移植，第三方库不随仓库分发。
