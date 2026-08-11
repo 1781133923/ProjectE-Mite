@@ -574,12 +574,13 @@ public class ObjHandler
 		// High covalence dust: emerald instead of diamond.
 		GameRegistry.addShapelessRecipe(new ItemStack(covalence, 40, 2), Items.emerald, Items.coal);
 
-		//Klein Stars
+		//Klein Stars - standard visible shapeless upgrades (EMC carries over)
 		for (int i = 1; i < 6; i++)
 		{
 			ItemStack input = new ItemStack(kleinStars, 1, i - 1);
 			ItemStack output = new ItemStack(kleinStars, 1, i);
-			GameRegistry.addRecipe(new RecipeShapelessHidden(output, input, input, input, input));
+			GameRegistry.addRecipe(new moze_intel.projecte.gameObjs.customRecipes.KleinStarUpgradeRecipe(output,
+				java.util.Arrays.asList(input, input, input, input), i - 1));
 		}
 
 		//Other items

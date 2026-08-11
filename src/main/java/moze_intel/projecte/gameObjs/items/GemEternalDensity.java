@@ -77,7 +77,8 @@ public class GemEternalDensity extends ItemPE implements IAlchBagItem, IAlchChes
 			stack.setTagCompound(new NBTTagCompound());
 		}
 		
-		if (world.isRemote || slot > 8 || !(entity instanceof EntityPlayer))
+		// Works anywhere in the main inventory (hotbar + backpack).
+		if (world.isRemote || !(entity instanceof EntityPlayer))
 		{
 			return;
 		}

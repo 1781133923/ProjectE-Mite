@@ -80,6 +80,34 @@ public class DMArmor extends ItemArmor implements ISpecialArmor
 				return 4;
 		}
 	}
+	/**
+	 * ITE armor XP curve override (method only exists at runtime when MITE-ITE
+	 * is installed): this set uses the 24 + 12*level curve instead of ITE's
+	 * unknown-material default (150 + 75*level). Armor-type multiplier mirrors
+	 * ItemArmorTrans (head 2, chest 4, legs 3, feet 1).
+	 */
+	public int getExpReqForLevel(int level, boolean isWeapon)
+	{
+		return getExpReqForLevel(level, this.armorType, this);
+	}
+
+	/**
+	 * ITE tooltip/display and the level-up check both call this 3-arg variant
+	 * (the tooltip calls it directly), so override it as well as the 2-arg one.
+	 */
+	public int getExpReqForLevel(int level, int armorType, ItemArmor itemArmor)
+	{
+		int multiplier;
+		switch (armorType)
+		{
+			case 0: multiplier = 2; break;
+			case 1: multiplier = 4; break;
+			case 2: multiplier = 3; break;
+			case 3: multiplier = 1; break;
+			default: return 64 * level;
+		}
+		return multiplier * (24 + 12 * level);
+	}
 
 	@Override
 	public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) 

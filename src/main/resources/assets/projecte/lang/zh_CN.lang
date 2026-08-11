@@ -237,7 +237,7 @@ pe.gem.stepassist.prompt=按[%s]键切换如履平地
 
 pe.gemdensity.blacklist=黑名单
 pe.gemdensity.mode_switch=转换目标设定为: %s
-pe.gemdensity.tooltip1=快捷栏生效：不停地转换物品
+pe.gemdensity.tooltip1=背包生效：不停地转换物品
 pe.gemdensity.tooltip2=转换目标: %s
 pe.gemdensity.tooltip3=按[%s]键改变转换目标
 pe.gemdensity.tooltip4=右键设置黑名单或白名单

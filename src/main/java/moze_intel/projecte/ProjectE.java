@@ -395,6 +395,91 @@ public class ProjectE implements ModInitializer {
     }
 
     /**
+     * Optional ITE forging-table integration: register the ProjectE tool/armor
+     * materials into MITE-ITE's forging table so dark/red/gem gear can be
+     * forged (forging grade 0-2) exactly like vanilla gear. ITE forging keeps
+     * the item's NBT, so the previous piece's tool level, exp and modifiers
+     * carry over to the forged result. Reflectively registered - no
+     * compile-time dependency on ITE.
+     */
+    private static void registerIteForgingRecipesIfPresent() {
+        try {
+            Class<?> recipesClass = Class.forName("net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableRecipes");
+            Class<?> tableLevelClass = Class.forName("net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableLevel");
+            java.lang.reflect.Method register = recipesClass.getMethod("registerForgingRecipe",
+                net.minecraft.Material.class, tableLevelClass, int.class);
+            // Table tier matches the armor XP tiers: dark=mithril, red=adamantium, gem=vibranium.
+            registerIteForgingRecipes(register, tableLevelClass,
+                moze_intel.projecte.gameObjs.items.tools.PEToolMaterials.DARK_MATTER, "MITHRIL");
+            registerIteForgingRecipes(register, tableLevelClass,
+                moze_intel.projecte.gameObjs.items.tools.PEToolMaterials.RED_MATTER, "ADAMANTIUM");
+            registerIteForgingRecipes(register, tableLevelClass,
+                moze_intel.projecte.gameObjs.items.tools.PEToolMaterials.GEM_MATTER, "VIBRANIUM");
+            System.out.println("[ProjectE] Registered ProjectE materials with ITE forging recipes");
+        } catch (Throwable noIte) {
+            // ITE not installed - forging integration is skipped.
+        }
+    }
+
+    private static void registerIteForgingRecipes(java.lang.reflect.Method register, Class<?> tableLevelClass,
+            net.minecraft.Material material, String tableLevelName) {
+        if (material == null) {
+            return;
+        }
+        try {
+            Object tableLevel = Enum.valueOf((Class<? extends Enum>) tableLevelClass, tableLevelName);
+            for (int level = 0; level < 3; level++) {
+                register.invoke(null, material, tableLevel, level);
+            }
+        } catch (Throwable t) {
+            // ignored - registration is best-effort
+        }
+    }
+
+    /**
+     * Mark every ProjectE crafting upgrade recipe (dark->red / red->gem armour
+     * and tools) as NBT-propagating: MITE's ShapedRecipes (field_92101_f) and
+     * ShapelessRecipes (propagateTagCompound) copy the first NBT-carrying
+     * ingredient onto the result - exactly what ITE/Extreme use so the
+     * upgraded piece keeps its tool level, exp and modifiers.
+     */
+    private static void enableProjectEUpgradeNbtInheritance() {
+        try {
+            java.util.List<?> recipes = net.minecraft.CraftingManager.getInstance().getRecipeList();
+            for (Object obj : recipes) {
+                net.minecraft.IRecipe recipe = (net.minecraft.IRecipe) obj;
+                net.minecraft.ItemStack output = recipe.getRecipeOutput();
+                if (output == null || !isProjectEUpgradeOutput(output.getItem())) {
+                    continue;
+                }
+                if (recipe instanceof net.minecraft.ShapelessRecipes) {
+                    ((net.minecraft.ShapelessRecipes) recipe).propagateTagCompound();
+                } else if (recipe instanceof net.minecraft.ShapedRecipes) {
+                    java.lang.reflect.Field f = net.minecraft.ShapedRecipes.class.getDeclaredField("field_92101_f");
+                    f.setAccessible(true);
+                    f.setBoolean(recipe, true);
+                }
+            }
+        } catch (Throwable t) {
+            // best-effort
+        }
+    }
+
+    private static boolean isProjectEUpgradeOutput(net.minecraft.Item item) {
+        return item instanceof moze_intel.projecte.gameObjs.items.armor.RMArmor
+            || item instanceof moze_intel.projecte.gameObjs.items.armor.GemArmorBase
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedSword
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedHammer
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedPick
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedAxe
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedShovel
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedHoe
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedShears
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedKatar
+            || item instanceof moze_intel.projecte.gameObjs.items.tools.RedStar;
+    }
+
+    /**
      * Optional CarryOn integration: forbid carrying the dark matter pedestal
      * (its tile is not an inventory, so carrying it breaks the GUI / item
      * slot). Everything is done reflectively with a dynamic proxy, so ProjectE
@@ -444,6 +529,8 @@ public class ProjectE implements ModInitializer {
         // Integrated servers already finalized at client startGame; dedicated
         // servers need it here (after every mod's main entrypoint).
         finalizeRecipeRegistration();
+        registerIteForgingRecipesIfPresent();
+        enableProjectEUpgradeNbtInheritance();
         PECore.instance.serverStarting(event);
         for (net.minecraft.ICommand command : event.getRegisteredCommands()) {
             server.getCommandManager().getCommands().put(command.getCommandName(), command);

@@ -160,6 +160,33 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 		return pePrimaryToolClass;
 	}
 
+	/**
+	 * Whether this weapon gains +0.5 melee attack reach per charge level
+	 * (sword / hammer / katar / morning star). Reach only affects normal melee
+	 * attacks; the C-key special attack uses its own charge-based AOE radius
+	 * (attackAOE) and is intentionally not affected.
+	 */
+	/**
+	 * Whether this tool gains +1 block mining reach per charge level (pickaxe /
+	 * hammer / morning star), applied when the targeted block is one the tool is
+	 * effective against. Left-click mining reach only; the right-click AOE dig
+	 * uses its own charge-based box and is not affected.
+	 */
+	public boolean gainsChargeMiningReachBonus()
+	{
+		return "pickaxe".equals(pePrimaryToolClass)
+			|| "hammer".equals(pePrimaryToolClass)
+			|| "morning_star".equals(pePrimaryToolClass);
+	}
+
+	public boolean gainsChargeReachBonus()
+	{
+		return "sword".equals(pePrimaryToolClass)
+			|| "hammer".equals(pePrimaryToolClass)
+			|| "katar".equals(pePrimaryToolClass)
+			|| "morning_star".equals(pePrimaryToolClass);
+	}
+
 	public boolean isMiningWeapon()
 	{
 		return "hammer".equals(pePrimaryToolClass)

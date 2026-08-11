@@ -320,7 +320,15 @@ public final class EMCHelper
 
 	public static int getKleinStarMaxEmc(ItemStack stack)
 	{
-		return Constants.MAX_KLEIN_EMC[stack.getItemDamage()];
+		// MITE stores item variants in getItemSubtype(); getItemDamage() is the
+		// durability field and is always 0 for Klein Stars, which would cap every
+		// tier at the tier-1 capacity.
+		int tier = stack.getItemSubtype();
+		if (tier < 0 || tier >= Constants.MAX_KLEIN_EMC.length)
+		{
+			tier = 0;
+		}
+		return Constants.MAX_KLEIN_EMC[tier];
 	}
 
 	public static double getStoredEMCBonus(ItemStack stack) {
