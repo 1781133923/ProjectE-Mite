@@ -24,6 +24,9 @@ import net.minecraft.Icon;
 import net.minecraft.MathHelper;
 import net.minecraft.StatCollector;
 import net.minecraft.World;
+import net.minecraft.Entity;
+import net.minecraft.Potion;
+import net.minecraft.PotionEffect;
 
 import java.util.List;
 
@@ -39,6 +42,16 @@ public class SWRG extends ItemPE implements IBauble, IPedestalItem, IFlightProvi
 	{
 		this.setUnlocalizedName("swrg");
 		this.setMaxStackSize(1);
+	}
+
+	@Override
+	public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean isHeld)
+	{
+		// Carried anywhere (main inventory or Baubles): Speed II.
+		if (!world.isRemote && entity instanceof EntityPlayer)
+		{
+			((EntityPlayer) entity).addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 220, 1, true));
+		}
 	}
 
 	/**
@@ -90,7 +103,10 @@ public class SWRG extends ItemPE implements IBauble, IPedestalItem, IFlightProvi
 
 	@Override
 	@Optional.Method(modid = "Baubles")
-	public void onWornTick(ItemStack stack, EntityLivingBase ent) {}
+	public void onWornTick(ItemStack stack, EntityLivingBase ent)
+	{
+		this.onUpdate(stack, ent.worldObj, ent, 0, false);
+	}
 
 	@Override
 	@Optional.Method(modid = "Baubles")

@@ -43,20 +43,29 @@ public final class PlayerTimers
 				timers.feed.shouldUpdate = false;
 			}
 
-			// Body/Life stones feed 8x slower than the other feed sources:
-			// one 1/2-shank bite every 160 ticks.
-			if (timers.slowFeed.shouldUpdate)
+			// Body Stone feeds one 1/2-shank bite every 80 ticks (4 s).
+			if (timers.bodyFeed.shouldUpdate)
 			{
-				if (timers.slowFeed.tickCount < 159)
+				if (timers.bodyFeed.tickCount < 79)
 				{
-					timers.slowFeed.tickCount++;
+					timers.bodyFeed.tickCount++;
 				}
 
-				timers.slowFeed.shouldUpdate = false;
+				timers.bodyFeed.shouldUpdate = false;
 			}
 
-			// Gem chestplate feeds twice as fast as the Life stone: every 80
-			// ticks instead of 160.
+			// Life Stone feeds one 1/2-shank bite every 40 ticks (2 s).
+			if (timers.lifeFeed.shouldUpdate)
+			{
+				if (timers.lifeFeed.tickCount < 39)
+				{
+					timers.lifeFeed.tickCount++;
+				}
+
+				timers.lifeFeed.shouldUpdate = false;
+			}
+
+			// Gem chestplate feeds one 1/2-shank bite every 80 ticks (4 s).
 			if (timers.gemFeed.shouldUpdate)
 			{
 				if (timers.gemFeed.tickCount < 79)
@@ -106,9 +115,14 @@ public final class PlayerTimers
 		MAP.get(player.getCommandSenderName()).feed.shouldUpdate = true;
 	}
 
-	public static void activateSlowFeed(EntityPlayer player)
+	public static void activateBodyFeed(EntityPlayer player)
 	{
-		MAP.get(player.getCommandSenderName()).slowFeed.shouldUpdate = true;
+		MAP.get(player.getCommandSenderName()).bodyFeed.shouldUpdate = true;
+	}
+
+	public static void activateLifeFeed(EntityPlayer player)
+	{
+		MAP.get(player.getCommandSenderName()).lifeFeed.shouldUpdate = true;
 	}
 
 	public static void activateGemFeed(EntityPlayer player)
@@ -163,11 +177,25 @@ public final class PlayerTimers
 		return false;
 	}
 
-	public static boolean canSlowFeed(EntityPlayer player)
+	public static boolean canBodyFeed(EntityPlayer player)
 	{
-		Timer timer = MAP.get(player.getCommandSenderName()).slowFeed;
+		Timer timer = MAP.get(player.getCommandSenderName()).bodyFeed;
 
-		if (timer.tickCount >= 159)
+		if (timer.tickCount >= 79)
+		{
+			timer.tickCount = 0;
+			timer.shouldUpdate = false;
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean canLifeFeed(EntityPlayer player)
+	{
+		Timer timer = MAP.get(player.getCommandSenderName()).lifeFeed;
+
+		if (timer.tickCount >= 39)
 		{
 			timer.tickCount = 0;
 			timer.shouldUpdate = false;
@@ -210,7 +238,8 @@ public final class PlayerTimers
 		public Timer repair;
 		public Timer heal;
 		public Timer feed;
-		public Timer slowFeed;
+		public Timer bodyFeed;
+		public Timer lifeFeed;
 		public Timer gemFeed;
 		public Timer gemHeal;
 
@@ -219,7 +248,8 @@ public final class PlayerTimers
 			repair = new Timer();
 			heal = new Timer();
 			feed = new Timer();
-			slowFeed = new Timer();
+			bodyFeed = new Timer();
+			lifeFeed = new Timer();
 			gemFeed = new Timer();
 			gemHeal = new Timer();
 		}

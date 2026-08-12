@@ -171,7 +171,7 @@ public final class PlayerChecks
 			}
 		}
 
-		for (int i = 0; i <= 8; i++)
+		for (int i = 0; i < player.inventory.mainInventory.length; i++)
 		{
 			ItemStack stack = player.inventory.getStackInSlot(i);
 
@@ -213,7 +213,7 @@ public final class PlayerChecks
 			}
 		}
 
-		for (int i = 0; i <= 8; i++)
+		for (int i = 0; i < player.inventory.mainInventory.length; i++)
 		{
 			ItemStack stack = player.inventory.getStackInSlot(i);
 
@@ -255,7 +255,7 @@ public final class PlayerChecks
 			}
 		}
 
-		for (int i = 0; i <= 8; i++)
+		for (int i = 0; i < player.inventory.mainInventory.length; i++)
 		{
 			ItemStack stack = player.inventory.getStackInSlot(i);
 
@@ -287,7 +287,7 @@ public final class PlayerChecks
 
 	private static boolean hasSwrg(ServerPlayer player)
 	{
-		for (int i = 0; i <= 8; i++)
+		for (int i = 0; i < player.inventory.mainInventory.length; i++)
 		{
 			if (player.inventory.mainInventory[i] != null && player.inventory.mainInventory[i].getItem() == ObjHandler.swrg)
 			{

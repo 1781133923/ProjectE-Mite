@@ -40,7 +40,7 @@ public class Ignition extends RingToggle implements IBauble, IPedestalItem, IFir
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int inventorySlot, boolean par5) 
 	{
-		if (world.isRemote || inventorySlot > 8 || !(entity instanceof EntityPlayer)) return;
+		if (world.isRemote || !(entity instanceof EntityPlayer)) return;
 		
 		super.onUpdate(stack, world, entity, inventorySlot, par5);
 		ServerPlayer player = (ServerPlayer)entity;

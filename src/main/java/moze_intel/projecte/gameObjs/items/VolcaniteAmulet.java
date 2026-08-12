@@ -116,7 +116,7 @@ public class VolcaniteAmulet extends ItemPE implements IProjectileShooter, IBaub
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean par5)
 	{
-		if (invSlot > 8 || !(entity instanceof EntityPlayer)) return;
+		if (!(entity instanceof EntityPlayer)) return;
 		
 		EntityPlayer player = (EntityPlayer) entity;
 

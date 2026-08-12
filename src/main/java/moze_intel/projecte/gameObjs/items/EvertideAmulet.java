@@ -156,7 +156,7 @@ public class EvertideAmulet extends ItemPE implements IProjectileShooter, IBaubl
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean par5)
 	{
-		if (invSlot > 8 || !(entity instanceof EntityPlayer)) 
+		if (!(entity instanceof EntityPlayer)) 
 		{
 			return;
 		}

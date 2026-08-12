@@ -98,7 +98,7 @@ public class Arcana extends ItemPE implements IBauble, IModeChanger, IFlightProv
 	{
 		if(stack.stackTagCompound == null) stack.setTagCompound(new NBTTagCompound());
 		
-		if(world.isRemote || slot > 8 || !(entity instanceof ServerPlayer)) return;
+		if(world.isRemote || !(entity instanceof ServerPlayer)) return;
 		
 		tick(stack, world, (ServerPlayer)entity);
 	}

@@ -60,8 +60,7 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 
 	@Override
 	public boolean onItemRightClick(EntityPlayer player, float partial_tick, boolean ctrl_is_down){
-		// 按需求移除：右键切换时间加速/回溯模式。时间怀表只保留台座功能。
-		/*
+		// 右键切换时间加速/回溯模式。
 		ItemStack stack = player.getHeldItemStack();
 		World world = player.worldObj;
 		if (!world.isRemote)
@@ -83,7 +82,6 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 
 			moze_intel.projecte.compat.PEChatHelper.send(player, new ChatComponentTranslation("pe.timewatch.mode_switch", new ChatComponentTranslation(getTimeName(stack)).getUnformattedTextForChat()));
 		}
-		*/
 
 		return true;
 	}
@@ -91,15 +89,13 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean isHeld) 
 	{
-		// 按需求移除：手持/穿戴时的时间加速、时间回溯以及附近的方块/生物加速效果。
-		// 时间怀表只保留台座功能（见 updateInPedestal）。
-		/*
+		// 手持/穿戴时的时间加速、时间回溯以及附近的方块/生物加速效果。
 		if (!stack.hasTagCompound())
 		{
 			stack.setTagCompound(new NBTTagCompound());
 		}
 		
-		if (!(entity instanceof EntityPlayer) || invSlot > 8)
+		if (!(entity instanceof EntityPlayer))
 		{
 			return;
 		}
@@ -111,33 +107,22 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 
 		byte timeControl = getTimeBoost(stack);
 
-		if (world.getWorldInfo() != null && world.getGameRules().getGameRuleBooleanValue("doDaylightCycle")) {
-			// MITE stores a total world time per dimension (time of day = total % 24000),
-			// so shift the total time directly to preserve the day count.
-			long totalTime = world.getWorldInfo().getWorldTotalTime(world.getDimensionId());
-			// x100 test multiplier: base (charge+1)*4 ticks per tick, x100.
-			int delta = (getCharge(stack) + 1) * 400;
+		if (world.getWorldInfo() != null)
+		{
+			// Same time-adjustment method ITE uses (first_day_longer_day_time):
+			// World.getTotalWorldTime()/setTotalWorldTime(long). Do NOT gate on the
+			// doDaylightCycle game rule - MITE may have it off, which silently
+			// disabled the whole time control.
+			long totalTime = world.getTotalWorldTime();
+			// Original ProjectE speed: (charge+1)*4 ticks per tick.
+			int delta = (getCharge(stack) + 1) * 4;
 			if (timeControl == 1)
 			{
-				if (totalTime + delta > Long.MAX_VALUE)
-				{
-					moze_intel.projecte.compat.PECompatHelper.setWorldTime(world, Long.MAX_VALUE);
-				}
-				else
-				{
-					moze_intel.projecte.compat.PECompatHelper.setWorldTime(world, totalTime + delta);
-				}
+				world.setTotalWorldTime(Math.min(totalTime + delta, Long.MAX_VALUE));
 			}
 			else if (timeControl == 2)
 			{
-				if (totalTime - delta < 0)
-				{
-					moze_intel.projecte.compat.PECompatHelper.setWorldTime(world, 0);
-				}
-				else
-				{
-					moze_intel.projecte.compat.PECompatHelper.setWorldTime(world, totalTime - delta);
-				}
+				world.setTotalWorldTime(Math.max(totalTime - delta, 0));
 			}
 		}
 
@@ -179,7 +164,6 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 		speedUpTileEntities(world, bonusTicks, bBox);
 		speedUpRandomTicks(world, bonusTicks, bBox);
 		slowMobs(world, bBox, mobSlowdown);
-		*/
 	}
 
 	private void slowMobs(World world, AxisAlignedBB bBox, float mobSlowdown)
@@ -438,6 +422,10 @@ public class TimeWatch extends ItemCharge implements IModeChanger, IBauble, IPed
 		{
 			list.add(EnumChatFormatting.BLUE +
 					String.format(StatCollector.translateToLocal("pe.timewatch.pedestal2"), ProjectEConfig.timePedMobSlowness));
+		}
+		if (ProjectEConfig.enableTimeWatch)
+		{
+			list.add(EnumChatFormatting.BLUE + StatCollector.translateToLocal("pe.timewatch.pedestal3"));
 		}
 		return list;
 	}

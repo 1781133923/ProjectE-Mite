@@ -36,10 +36,6 @@ public class VoidRing extends GemEternalDensity implements IPedestalItem, IExtra
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean isHeld)
 	{
-		if (slot > 8)
-		{
-			return;
-		}
 		super.onUpdate(stack, world, entity, slot, isHeld);
 		ObjHandler.blackHole.onUpdate(stack, world, entity, slot, isHeld);
 		if (!stack.getTagCompound().hasKey("teleportCooldown"))

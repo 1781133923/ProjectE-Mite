@@ -26,14 +26,6 @@ public class IronBand extends ItemPE implements IBauble
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(net.minecraft.ItemStack stack, net.minecraft.EntityPlayer player, java.util.List list, boolean par4, net.minecraft.Slot slot)
-	{
-		super.addInformation(stack, player, list, par4, slot);
-		list.add(net.minecraft.EnumChatFormatting.BLUE + net.minecraft.StatCollector.translateToLocal("pe.ring_iron_band.tooltip1"));
-	}
-
-	@Override
 	@Optional.Method(modid = "Baubles")
 	public BaubleType getBaubleType(ItemStack itemstack)
 	{

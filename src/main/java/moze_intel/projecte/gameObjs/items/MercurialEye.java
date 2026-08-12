@@ -54,7 +54,7 @@ public class MercurialEye extends ItemMode implements IExtraFunction, IBauble
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean isHeld)
 	{
-		if (!world.isRemote && entity instanceof EntityPlayer && invSlot <= 8)
+		if (!world.isRemote && entity instanceof EntityPlayer)
 		{
 			((EntityPlayer) entity).addPotionEffect(new PotionEffect(Potion.nightVision.id, 220, 0, true));
 		}

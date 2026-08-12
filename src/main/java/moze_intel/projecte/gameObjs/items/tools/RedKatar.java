@@ -58,6 +58,14 @@ public class RedKatar extends PEToolBase implements IExtraFunction
 			return true;
 		}
 
+		// Right-click the ground: AOE till (same as the dark/red matter hoes).
+		RaycastCollision rc = player.getSelectedObject(partial_tick, true);
+		if (rc != null && rc.isBlock() && rc.face_hit != null && rc.face_hit.isTop())
+		{
+			tillAOE(stack, player, rc.world, rc.block_hit_x, rc.block_hit_y, rc.block_hit_z, 0, 0);
+			return true;
+		}
+
 		byte charge = getCharge(stack);
 
 		// AOE shear: MITE sheep around the player

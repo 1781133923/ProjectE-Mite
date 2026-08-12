@@ -789,23 +789,33 @@ public abstract class PEToolBase extends ItemMode implements IDamageableItem
 						continue;
 					}
 
-					ItemStack s = new ItemStack(block);
-					int[] oreIds = OreDictionary.getOreIDs(s);
-
+					// MITE leaves are not registered in the OreDictionary, so
+					// match them by material (BlockLeaves uses
+					// Material.tree_leaves) instead of relying on the OD name.
 					String oreName;
-					if (oreIds.length == 0)
+					if (block.blockMaterial == Material.tree_leaves)
 					{
-						if (block == Blocks.brown_mushroom_block || block == Blocks.red_mushroom_block)
-						{
-							oreName = "logWood";
-						}
-						else
-						{
-							continue;
-						}
+						oreName = "treeLeaves";
 					}
-					else {
-						oreName = OreDictionary.getOreName(oreIds[0]);
+					else
+					{
+						ItemStack s = new ItemStack(block);
+						int[] oreIds = OreDictionary.getOreIDs(s);
+
+						if (oreIds.length == 0)
+						{
+							if (block == Blocks.brown_mushroom_block || block == Blocks.red_mushroom_block)
+							{
+								oreName = "logWood";
+							}
+							else
+							{
+								continue;
+							}
+						}
+						else {
+							oreName = OreDictionary.getOreName(oreIds[0]);
+						}
 					}
 
 					if (odName.equals(oreName))

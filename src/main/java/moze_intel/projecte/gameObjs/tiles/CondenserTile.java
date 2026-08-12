@@ -28,7 +28,7 @@ public class CondenserTile extends TileEmcDirection implements IInventory, ISide
 	protected boolean loadChecks;
 	protected boolean isAcceptingEmc;
 	private int ticksSinceSync;
-	public int displayEmc;
+	public double displayEmc;
 	public float lidAngle;
 	public float prevLidAngle;
 	public int numPlayersUsing;
@@ -53,11 +53,17 @@ public class CondenserTile extends TileEmcDirection implements IInventory, ISide
 		if (!loadChecks)
 		{
 			TileEntityHandler.addCondenser(this);
-			checkLockAndUpdate();
 			loadChecks = true;
 		}
 
-		displayEmc = (int) this.getStoredEmc();
+		// Re-check until the lock resolves; the selected item must never be wiped
+		// just because EMC was not available on the first tick after load.
+		if (inventory[0] != null && (requiredEmc == 0 || !this.isAcceptingEmc))
+		{
+			checkLockAndUpdate();
+		}
+
+		displayEmc = this.getStoredEmc();
 
 		if (lock != null && requiredEmc != 0)
 		{
@@ -95,8 +101,14 @@ public class CondenserTile extends TileEmcDirection implements IInventory, ISide
 		}
 		else
 		{
-			lock = null;
-			inventory[0] = null;
+			// Do NOT wipe the user-selected lock on a transient EMC lookup failure
+			// (the EMC map can still be initialising when the tile first ticks
+			// after a world load). Keep it and retry on later ticks.
+			if (this.worldObj != null && !this.worldObj.isRemote && this.ticksSinceSync % 200 == 0)
+			{
+				System.out.println("[ProjectE][condenser-debug] lock kept, EMC not found: " + lock.getDisplayName()
+					+ " mapSize=" + moze_intel.projecte.emc.EMCMapper.emc.size());
+			}
 
 			displayEmc = 0;
 			requiredEmc = 0;
@@ -225,7 +237,7 @@ public class CondenserTile extends TileEmcDirection implements IInventory, ISide
 			return Constants.MAX_CONDENSER_PROGRESS;
 		}
 		
-		return (displayEmc * Constants.MAX_CONDENSER_PROGRESS) / requiredEmc;
+		return (int) ((displayEmc * Constants.MAX_CONDENSER_PROGRESS) / requiredEmc);
 	}
 
 	@Override

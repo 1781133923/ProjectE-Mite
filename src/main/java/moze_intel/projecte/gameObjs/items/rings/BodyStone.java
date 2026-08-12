@@ -32,7 +32,7 @@ public class BodyStone extends RingToggle implements IBauble, IPedestalItem
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5)
 	{
-		if (world.isRemote || par4 > 8 || !(entity instanceof EntityPlayer)) 
+		if (world.isRemote || !(entity instanceof EntityPlayer)) 
 		{
 			return;
 		}
@@ -45,9 +45,9 @@ public class BodyStone extends RingToggle implements IBauble, IPedestalItem
 		// fuel and needs no toggle. The old code silently deactivated the
 		// stone whenever the player carried no alchemical fuel/Klein star,
 		// which made the carried effect look completely broken.
-		PlayerTimers.activateSlowFeed(player);
+		PlayerTimers.activateBodyFeed(player);
 
-		if (player.getFoodStats().getNutrition() < player.getFoodStats().getNutritionLimit() && PlayerTimers.canSlowFeed(player))
+		if (player.getFoodStats().getNutrition() < player.getFoodStats().getNutritionLimit() && PlayerTimers.canBodyFeed(player))
 		{
 			world.playSoundAtEntity(player, "projecte:item.peheal", 1.0F, 1.0F);
 			moze_intel.projecte.compat.PECompatHelper.feedPlayer(player);

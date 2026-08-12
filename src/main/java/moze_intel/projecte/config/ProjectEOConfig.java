@@ -587,6 +587,11 @@ public final class ProjectEOConfig
 			putItemEmc(Class.forName("net.xiaoyu233.mitemod.miteite.item.MITEITEItemRegistryInit"),
 					new String[]{"VIBRANIUM_INGOT", "VIBRANIUM_NUGGET"},
 					new int[]{498800, 55422});
+
+			// 无尽残片（infinityNugget）250 万 EMC；无尽之锭（infinityingot）1000 万 EMC。
+			putItemEmc(Class.forName("net.moddedmite.mitemod.bex.register.BEXItems"),
+					new String[]{"infinityNugget", "infinityingot"},
+					new int[]{2500000, 10000000});
 		}
 		catch (Throwable t)
 		{

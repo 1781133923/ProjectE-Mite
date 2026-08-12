@@ -33,7 +33,7 @@ public class LifeStone extends RingToggle implements IBauble, IPedestalItem
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5)
 	{
-		if (world.isRemote || par4 > 8 || !(entity instanceof EntityPlayer)) 
+		if (world.isRemote || !(entity instanceof EntityPlayer)) 
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ public class LifeStone extends RingToggle implements IBauble, IPedestalItem
 		// Carried effect mirrors the gem helmet + chestplate: always active,
 		// costs no fuel and needs no toggle (see BodyStone for the fuel
 		// auto-deactivation problem that made carried stones appear broken).
-		PlayerTimers.activateSlowFeed(player);
+		PlayerTimers.activateLifeFeed(player);
 		PlayerTimers.activateHeal(player);
 
 		if (player.getHealth() < player.getMaxHealth() && PlayerTimers.canHeal(player))
@@ -54,7 +54,7 @@ public class LifeStone extends RingToggle implements IBauble, IPedestalItem
 			player.heal(1.0F); // half a heart per 20 ticks, like the Soul stone
 		}
 
-		if (player.getFoodStats().getNutrition() < player.getFoodStats().getNutritionLimit() && PlayerTimers.canSlowFeed(player))
+		if (player.getFoodStats().getNutrition() < player.getFoodStats().getNutritionLimit() && PlayerTimers.canLifeFeed(player))
 		{
 			world.playSoundAtEntity(player, "projecte:item.peheal", 1.0F, 1.0F);
 			moze_intel.projecte.compat.PECompatHelper.feedPlayer(player);

@@ -46,7 +46,7 @@ public class Zero extends ItemCharge implements IModeChanger, IBauble, IPedestal
 	{
 		super.onUpdate(stack, world, entity, par4, par5);
 		
-		if (world.isRemote || !(entity instanceof EntityPlayer) || par4 > 8 || getMode(stack) == 0)
+		if (world.isRemote || !(entity instanceof EntityPlayer) || getMode(stack) == 0)
 		{
 			return;
 		}

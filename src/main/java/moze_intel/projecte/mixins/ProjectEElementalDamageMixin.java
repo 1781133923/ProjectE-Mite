@@ -26,6 +26,14 @@ public abstract class ProjectEElementalDamageMixin {
             return;
         }
         PEToolBase tool = (PEToolBase) stack.getItem();
+        // The red matter katar is crafted with a red matter hammer (and an
+        // axe), so its melee and C-key special attack damage every earth
+        // elemental variant regardless of the elemental's block.
+        if (tool instanceof moze_intel.projecte.gameObjs.items.tools.RedKatar)
+        {
+            cir.setReturnValue(false);
+            return;
+        }
         net.minecraft.Block block = self.getBlock();
         if (block != null && tool.isEffectiveAgainstBlock(block, 0)) {
             cir.setReturnValue(false);

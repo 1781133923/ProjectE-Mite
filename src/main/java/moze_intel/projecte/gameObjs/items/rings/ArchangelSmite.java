@@ -44,7 +44,7 @@ public class ArchangelSmite extends RingToggle implements IPedestalItem, IModeCh
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5)
 	{
-		if (!world.isRemote && getMode(stack) == 1 && entity instanceof EntityLivingBase && par4 <= 8)
+		if (!world.isRemote && getMode(stack) == 1 && entity instanceof EntityLivingBase)
 		{
 			fireArrow(stack, world, ((EntityLivingBase) entity));
 		}

@@ -214,7 +214,7 @@ public class ToolTipEvent
 				if (current.stackTagCompound.getDouble("EMC") > 0)
 				{
 					event.toolTip.add(EnumChatFormatting.YELLOW + String.format(
-							StatCollector.translateToLocal("pe.emc.storedemc_tooltip") + " " + EnumChatFormatting.RESET + "%,d", (int) current.stackTagCompound.getDouble("EMC")));
+							StatCollector.translateToLocal("pe.emc.storedemc_tooltip") + " " + EnumChatFormatting.RESET + "%,.0f", current.stackTagCompound.getDouble("EMC")));
 				}
 			}
 			if (current.getItem() instanceof IItemEmc || current.stackTagCompound.hasKey("StoredEMC"))

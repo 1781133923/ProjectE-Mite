@@ -238,7 +238,8 @@ public class ProjectE implements ModInitializer {
        */
       private static final java.util.UUID LEGS_SPEED_UUID =
               java.util.UUID.fromString("9B4A2C1E-7D35-4F6A-9B0C-1E2F3A4B5C6D");
-      private static final java.util.Map<String, Float> LEGS_BASE_FLY_SPEED = new java.util.HashMap<>();
+      private static final float DEFAULT_FLY_SPEED = 0.05F;
+      private static final java.util.Map<String, Float> LAST_SET_FLY_SPEED = new java.util.HashMap<>();
 
       private static void updateLegsSpeed(net.minecraft.EntityPlayer player)
       {
@@ -253,19 +254,19 @@ public class ProjectE implements ModInitializer {
                       && ((moze_intel.projecte.gameObjs.items.armor.DMArmor) item).getArmorPiece()
                               == moze_intel.projecte.utils.EnumArmorType.LEGS)
               {
-                  bonus = 0.1D;
+                  bonus = 0.2D;
               }
               else if (item instanceof moze_intel.projecte.gameObjs.items.armor.RMArmor
                       && ((moze_intel.projecte.gameObjs.items.armor.RMArmor) item).getArmorPiece()
                               == moze_intel.projecte.utils.EnumArmorType.LEGS)
               {
-                  bonus = 0.2D;
+                  bonus = 0.4D;
               }
               else if (item instanceof moze_intel.projecte.gameObjs.items.armor.GemArmorBase
                       && ((moze_intel.projecte.gameObjs.items.armor.GemArmorBase) item).getArmorPiece()
                               == moze_intel.projecte.utils.EnumArmorType.LEGS)
               {
-                  bonus = 0.3D;
+                  bonus = 0.6D;
               }
           }
           net.minecraft.AttributeInstance attribute =
@@ -289,27 +290,73 @@ public class ProjectE implements ModInitializer {
               attribute.removeModifier(modifier);
           }
           // Flight: MITE's flying speed comes from capabilities.flySpeed, not
-          // the movementSpeed attribute, so scale it separately. The original
-          // fly speed is captured once per player and restored when the
-          // leggings are taken off.
+          // the movementSpeed attribute, so scale it separately.
+          //
+          // The baseline MUST be the fixed vanilla default 0.05, never the
+          // current capabilities.flySpeed: MITE persists flySpeed into the
+          // player NBT on every save, so capturing it as a "baseline" made the
+          // value compound by (1+legsBonus) on every login (0.05 -> 0.065 ->
+          // 0.0845 -> ... -> 4.78 in this save). A scan of every loaded jar
+          // confirmed no other mod writes flySpeed, so 0.05 is the true
+          // invariant; the polluted NBT self-heals because this code
+          // overwrites flySpeed every tick.
           String flyKey = player.getEntityName();
-          Float baseFly = LEGS_BASE_FLY_SPEED.get(flyKey);
-          if (baseFly == null)
-          {
-              baseFly = player.capabilities.getFlySpeed();
-              LEGS_BASE_FLY_SPEED.put(flyKey, baseFly);
-          }
-          player.capabilities.setFlySpeed(bonus > 0.0D ? baseFly * (1.0F + (float) bonus) : baseFly);
+          Float lastSetFly = LAST_SET_FLY_SPEED.get(flyKey);
+          float beforeFly = player.capabilities.getFlySpeed();
+          player.capabilities.setFlySpeed(bonus > 0.0D
+                  ? DEFAULT_FLY_SPEED * (1.0F + (float) bonus)
+                  : DEFAULT_FLY_SPEED);
+          float afterFly = player.capabilities.getFlySpeed();
+          LAST_SET_FLY_SPEED.put(flyKey, afterFly);
 
           if (player.ticksExisted % 40 == 0)
           {
-              System.out.println("[ProjectE] legs-speed: bonus=" + bonus
-                      + " base=" + attribute.getBaseValue()
-                      + " value=" + attribute.getAttributeValue()
-                      + " applied=" + (attribute.getModifier(LEGS_SPEED_UUID) != null)
+              float expectedFly = DEFAULT_FLY_SPEED * (1.0F + (float) bonus);
+              boolean externalOverride = lastSetFly != null
+                      && java.lang.Math.abs(beforeFly - lastSetFly.floatValue()) > 0.0001F;
+              StringBuilder providers = new StringBuilder();
+              for (int i = 0; i < player.inventory.armorInventory.length; i++)
+              {
+                  net.minecraft.ItemStack s = player.inventory.armorInventory[i];
+                  if (s != null && s.getItem() instanceof moze_intel.projecte.gameObjs.items.IFlightProvider)
+                  {
+                      providers.append(armorSlotName(player, i)).append(',');
+                  }
+              }
+              for (int i = 0; i < player.inventory.mainInventory.length; i++)
+              {
+                  net.minecraft.ItemStack s = player.inventory.getStackInSlot(i);
+                  if (s != null && s.getItem() instanceof moze_intel.projecte.gameObjs.items.IFlightProvider)
+                  {
+                      providers.append(s.getItem().getClass().getSimpleName()).append(',');
+                  }
+              }
+              net.minecraft.IInventory baubles = moze_intel.projecte.utils.PlayerHelper.getBaubles(player);
+              if (baubles != null)
+              {
+                  for (int i = 0; i < baubles.getSizeInventory(); i++)
+                  {
+                      net.minecraft.ItemStack s = baubles.getStackInSlot(i);
+                      if (s != null && s.getItem() instanceof moze_intel.projecte.gameObjs.items.IFlightProvider)
+                      {
+                          providers.append(s.getItem().getClass().getSimpleName()).append("(baubles),");
+                      }
+                  }
+              }
+              System.out.println("[ProjectE] fly-debug: side=" + (player.worldObj.isRemote ? "client" : "server")
+                      + " beforeFly=" + beforeFly
+                      + " afterFly=" + afterFly
+                      + " lastSet=" + lastSetFly
+                      + " externalOverride=" + externalOverride
+                      + " defaultFly=" + DEFAULT_FLY_SPEED
+                      + " legsBonus=" + bonus
+                      + " formula=baseFly*(1+legsBonus) expect=" + expectedFly
+                      + " match=" + (java.lang.Math.abs(afterFly - expectedFly) < 0.0001F)
+                      + " creative=" + player.capabilities.isCreativeMode
+                      + " providers=[" + providers + "]"
                       + " armor=" + armorSlotName(player, 0) + "/" + armorSlotName(player, 1)
                       + "/" + armorSlotName(player, 2) + "/" + armorSlotName(player, 3)
-                      + " fly=" + player.capabilities.getFlySpeed());
+                      + " moveSpeed=" + attribute.getAttributeValue());
           }
       }
 

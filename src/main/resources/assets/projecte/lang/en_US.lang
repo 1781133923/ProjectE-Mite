@@ -16,7 +16,6 @@ item.pe_covalence_dust_high.name=High Covalence Dust
 item.pe_matter_dark.name=Dark Matter
 item.pe_matter_red.name=Red Matter
 item.pe_ring_iron_band.name=Iron Band
-pe.ring_iron_band.tooltip1=Grants +0.5 armour while carried (only one band takes effect)
 item.pe_black_hole.name=Black Hole Band
 item.pe_harvest_god.name=Harvest Goddess Band
 item.pe_archangel_smite.name=Archangel's Smite
@@ -29,7 +28,7 @@ item.pe_evertide_amulet.name=Evertide Amulet
 item.pe_volcanite_amulet.name=Volcanite Amulet
 item.pe_swrg.name=Swiftwolf's Rending Gale
 item.pe_mercurial_eye.name=Mercurial Eye
-pe.mercurial_eye.tooltip1=Grants night vision while in the hotbar
+pe.mercurial_eye.tooltip1=Grants night vision while in your inventory
 item.pe_time_watch.name=Watch of Flowing Time
 item.pe_gem_density.name=Gem of Eternal Density
 item.pe_divining_rod_1.name=Divining Rod (low)
@@ -148,15 +147,15 @@ pe.arcana.mode.2=Harvest
 pe.arcana.mode.3=SWRG
 pe.arcana.inactive=Inactive!
 
-pe.archangel.tooltip1=When active and in the hotbar, automatically fires homing arrows at nearby enemies
+pe.archangel.tooltip1=When active and in your inventory, automatically fires homing arrows at nearby enemies
 pe.archangel.pedestal1=Fires arrows at nearby mobs
 pe.archangel.pedestal2=Triggers every %s
 
-pe.bhb.tooltip1=While in the hotbar, attracts nearby item drops
+pe.bhb.tooltip1=While in your inventory, attracts nearby item drops
 pe.bhb.pedestal1=Sucks in nearby item drops
 pe.bhb.pedestal2=Dumps in adjacent inventories
 
-pe.body.tooltip1=While in the hotbar, slowly restores hunger
+pe.body.tooltip1=While in your inventory, slowly restores hunger
 pe.body.pedestal1=Restores nearby players' hunger
 pe.body.pedestal2=Slowly restores nearby players' hunger
 
@@ -213,7 +212,7 @@ pe.emc.storedemc_tooltip=Stored EMC:
 pe.emc.too_much=WAY TOO MUCH
 
 pe.evertide.tooltip1=Press %s to fire a water projectile
-pe.evertide.tooltip2=Acts as an infinite water bucket while in the hotbar
+pe.evertide.tooltip2=Acts as an infinite water bucket while in your inventory
 pe.evertide.tooltip3=Right click to fill tanks and cauldrons
 pe.evertide.tooltip4=All operations are completely free!
 pe.evertide.pedestal1=Create rain/snow storms
@@ -244,12 +243,12 @@ pe.gemdensity.tooltip4=Right click to set up blacklist/whitelist
 pe.gemdensity.tooltip5=Shift right click to toggle
 pe.gemdensity.whitelist=Whitelist
 
-pe.harvestgod.tooltip1=While in the hotbar, cures blighted crops, harvests mature crops and replants
+pe.harvestgod.tooltip1=While in your inventory, cures blighted crops, harvests mature crops and replants
 pe.harvestgod.pedestal1=Accelerates growth of nearby crops
 pe.harvestgod.pedestal2=Grows crops one stage at random
 pe.harvestgod.pedestal3=Activates every %s
 
-pe.ignition.tooltip1=While in the hotbar, immune to fire; can ignite or extinguish nearby
+pe.ignition.tooltip1=While in your inventory, immune to fire; can ignite or extinguish nearby
 pe.ignition.pedestal1=Nearby mobs combust
 pe.ignition.pedestal2=Activates every %s
 
@@ -265,11 +264,11 @@ pe.key.extra_function=Extra Function
 pe.key.fire_projectile=Fire Projectile
 pe.key.mode=Change Mode
 
-pe.life.tooltip1=While in the hotbar, slowly restores health and hunger
+pe.life.tooltip1=While in your inventory, slowly restores health and hunger
 pe.life.pedestal1=Restores both hunger and hearts
 pe.life.pedestal2=Slowly restores health and hunger
 
-pe.mind.tooltip1=While in the hotbar, absorbs nearby XP orbs
+pe.mind.tooltip1=While in your inventory, absorbs nearby XP orbs
 pe.mind.pedestal1=Sucks nearby XP orbs into the Mind Stone
 
 pe.misc.every_tick=every tick
@@ -312,11 +311,11 @@ pe.repairtalisman.pedestal2=Slowly repairs nearby players' equipment
 pe.server.high_alchemist=High alchemist
 pe.server.has_joined=has joined the server
 
-pe.soul.tooltip1=While in the hotbar, slowly restores health
+pe.soul.tooltip1=While in your inventory, slowly restores health
 pe.soul.pedestal1=Heals nearby players
 pe.soul.pedestal2=Slowly heals nearby players
 
-pe.swrg.tooltip1=While in the hotbar, grants flight
+pe.swrg.tooltip1=While in your inventory, grants flight and Speed II
 pe.swrg.pedestal1=Shoots lightning at nearby mobs
 pe.swrg.pedestal2=Activates every %s
 
@@ -326,10 +325,11 @@ pe.timewatch.mode=Time control mode: %s
 pe.timewatch.mode_switch=Time control mode set to: %s
 pe.timewatch.off=Off
 pe.timewatch.rw=Rewind
-pe.timewatch.tooltip1=Only the dark matter pedestal function remains (accelerates nearby blocks)
-pe.timewatch.tooltip2=Holding or wearing it no longer affects time
+pe.timewatch.tooltip1=Control time as you wish
+pe.timewatch.tooltip2=Right-click to switch between fast-forward and rewind
 pe.timewatch.pedestal1=Gives %d bonus ticks to nearby blocks every tick
 pe.timewatch.pedestal2=Each tick, nearby mobs move %.3f times the speed
+pe.timewatch.pedestal3=Nearby players fish 18x faster
 
 pe.tome.tooltip1=Unlocks all transmutation knowledge when learned
 
@@ -359,18 +359,18 @@ pe.update.changelog=Use /projecte changelog for change log!
 pe.update.getit=Get it here!
 
 pe.volcanite.tooltip1=Press %s to fire a lava projectile
-pe.volcanite.tooltip2=Acts as an infinitely full lava bucket while in the hotbar
+pe.volcanite.tooltip2=Acts as an infinitely full lava bucket while in your inventory
 pe.volcanite.tooltip3=Right click to fill tanks
 pe.volcanite.tooltip4=All operations cost 32 EMC!
 pe.volcanite.pedestal1=Prevents rain/snow storms
 pe.volcanite.pedestal2=Attempts to stop weather every %s
 
-pe.zero.tooltip1=While in the hotbar, freezes nearby water and enemies, and extinguishes fire
+pe.zero.tooltip1=While in your inventory, freezes nearby water and enemies, and extinguishes fire
 pe.zero.pedestal1=Extinguishes entities
 pe.zero.pedestal2=Freezes surroundings
 pe.zero.pedestal3=Activates every %s
 
-pe.voidring.tooltip1=While in the hotbar, condenses items (same as the Gem of Eternal Density)
+pe.voidring.tooltip1=While in your inventory, condenses items (same as the Gem of Eternal Density)
 
 pe.debug.metainvalid.name=Invalid metadata set
 

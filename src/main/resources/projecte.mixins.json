@@ -11,6 +11,7 @@
 		"ProjectEMagicWeaponMixin",
 		"ProjectEElementalDamageMixin",
 		"ProjectEEnchantListMixin",
+		"ProjectEFishingSpeedMixin",
 		"ProjectEMeleeReachMixin",
 		"ProjectECraftingDamageMixin",
 		"ProjectEZombieBossDebugMixin",
@@ -32,7 +33,13 @@
 		"ProjectEDungeonGlowstoneMixin",
 		"ProjectEServerStopMixin",
 		"ProjectETransmutationTablePickaxeMixin",
-		"ProjectEResourceVerifyMixin"
+		"ProjectEResourceVerifyMixin",
+		"ProjectEWitchCurseImmunityMixin",
+		"ProjectEGemArmorLockMixin",
+		"ProjectEGemDamageCapMixin",
+		"ProjectEMagmaCubeDamageMixin",
+		"ProjectEEnderCrystalMixin",
+		"ProjectEDragonDamageMixin"
 	],
 	"client": [
 		"TransmutationGuiClickMixin",

@@ -33,7 +33,7 @@ public class SoulStone extends RingToggle implements IBauble, IPedestalItem
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5)
 	{
-		if (world.isRemote || par4 > 8 || !(entity instanceof EntityPlayer)) 
+		if (world.isRemote || !(entity instanceof EntityPlayer)) 
 		{
 			return;
 		}

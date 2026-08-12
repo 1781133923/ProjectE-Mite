@@ -473,7 +473,7 @@ public class ObjHandler
 		GameRegistry.addRecipe(new ItemStack(rmHoe), "RRX", "XHX", "XMX", 'R', new ItemStack(matter, 1, 1), 'H', dmHoe, 'M', matter);
 		GameRegistry.addRecipe(new ItemStack(rmShears), "XR", "SX", 'R', new ItemStack(matter, 1, 1), 'S', dmShears);
 		GameRegistry.addRecipe(new ItemStack(rmHammer), "RMR", "XHX", "XMX", 'R', new ItemStack(matter, 1, 1), 'H', dmHammer, 'M', matter);
-		GameRegistry.addRecipe(new ItemStack(rmKatar), "123", "4RR", "RRR", '1', rmShears, '2', rmAxe, '3', rmSword, '4', rmHoe, 'R', new ItemStack(matter, 1, 1));
+		GameRegistry.addRecipe(new ItemStack(rmKatar), "123", "4RH", "RRR", '1', rmShears, '2', rmAxe, '3', rmSword, '4', rmHoe, 'H', rmHammer, 'R', new ItemStack(matter, 1, 1));
 		GameRegistry.addRecipe(new ItemStack(rmStar), "123", "RRR", "RRR", '1', rmHammer, '2', rmPick, '3', rmShovel, 'R', new ItemStack(matter, 1, 1));
 
 		//Armor
@@ -490,7 +490,9 @@ public class ObjHandler
 		//Rings
 		GameRegistry.addRecipe(new ItemStack(ironBand), "III", "ILI", "III", 'I', Items.iron_ingot, 'L', Items.lava_bucket);
 		GameRegistry.addRecipe(new ItemStack(ironBand), "III", "ILI", "III", 'I', Items.iron_ingot, 'L', volcanite);
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(harvestGod), "SFS", "DID", "SFS", 'I', ironBand, 'S', "treeSapling", 'F', Blocks.red_flower, 'F', Blocks.red_flower, 'D', matter));
+		// Harvest Goddess ring: use concrete ingredients (the ShapedOreRecipe expansion
+		// path misreads pattern strings as ore-dict names and silently drops the recipe).
+		GameRegistry.addRecipe(new ItemStack(harvestGod), "SFS", "DID", "SFS", 'I', ironBand, 'S', new ItemStack(Blocks.sapling, 1, OreDictionary.WILDCARD_VALUE), 'F', Blocks.red_flower, 'D', matter);
 		// Swiftwolf's Rending Gale is now crafted with red matter (4) instead
 		// of dark matter.
 		GameRegistry.addRecipe(new ItemStack(swrg), "DFD", "FIF", "DFD", 'I', ironBand, 'F', Items.feather, 'D', new ItemStack(matter, 1, 1));
@@ -590,10 +592,11 @@ public class ObjHandler
 		GameRegistry.addShapelessRecipe(new ItemStack(Blocks.ice), new ItemStack(zero, 1, OreDictionary.WILDCARD_VALUE), Items.water_bucket);
 		GameRegistry.addShapelessRecipe(new ItemStack(Items.lava_bucket), volcanite, Items.bucket, Items.redstone);
 
-		GameRegistry.addShapelessRecipe(new ItemStack(gemHelmet), rmHelmet, new ItemStack(kleinStars, 1, 5), everTide, soulStone);
-		GameRegistry.addShapelessRecipe(new ItemStack(gemChest), rmChest, new ItemStack(kleinStars, 1, 5), volcanite, bodyStone);
-		GameRegistry.addShapelessRecipe(new ItemStack(gemLegs), rmLegs, new ItemStack(kleinStars, 1, 5), blackHole, timeWatch);
-		GameRegistry.addShapelessRecipe(new ItemStack(gemFeet), rmFeet, new ItemStack(kleinStars, 1, 5), swrg, swrg);
+		// Gem armour upgrades copy the red-matter piece NBT (tool level / exp / modifiers)
+		GameRegistry.addRecipe(new moze_intel.projecte.gameObjs.customRecipes.PEUpgradeShapelessRecipe(new ItemStack(gemHelmet), java.util.Arrays.asList(new ItemStack(rmHelmet), new ItemStack(kleinStars, 1, 5), new ItemStack(everTide), new ItemStack(soulStone)), rmHelmet));
+		GameRegistry.addRecipe(new moze_intel.projecte.gameObjs.customRecipes.PEUpgradeShapelessRecipe(new ItemStack(gemChest), java.util.Arrays.asList(new ItemStack(rmChest), new ItemStack(kleinStars, 1, 5), new ItemStack(volcanite), new ItemStack(bodyStone)), rmChest));
+		GameRegistry.addRecipe(new moze_intel.projecte.gameObjs.customRecipes.PEUpgradeShapelessRecipe(new ItemStack(gemLegs), java.util.Arrays.asList(new ItemStack(rmLegs), new ItemStack(kleinStars, 1, 5), new ItemStack(blackHole), new ItemStack(timeWatch)), rmLegs));
+		GameRegistry.addRecipe(new moze_intel.projecte.gameObjs.customRecipes.PEUpgradeShapelessRecipe(new ItemStack(gemFeet), java.util.Arrays.asList(new ItemStack(rmFeet), new ItemStack(kleinStars, 1, 5), new ItemStack(swrg), new ItemStack(swrg)), rmFeet));
 
 		GameRegistry.addShapelessRecipe(new ItemStack(matter, 4, 0), matterBlock);
 		GameRegistry.addShapelessRecipe(new ItemStack(matter, 4, 1), new ItemStack(matterBlock, 1, 1));
